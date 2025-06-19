@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "start:prod": "node -e \"require('@prisma/client'); require('child_process').execSync('npx prisma db push', {stdio: 'inherit'});\" && next start",
+    "start:prod": "node -e \"require('@prisma/client'); require('child_process').execSync('npx prisma db push', {stdio: 'inherit'}); require('child_process').execSync('npm run db:seed', {stdio: 'inherit'});\" && next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
