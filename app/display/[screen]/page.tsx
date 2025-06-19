@@ -70,17 +70,14 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     return false
   })
 
-  // Filter out empty taps - only show beers that are actually on tap
-  const availableBeers = screenBeers.filter((beer) => beer.status !== 'keg_empty')
-
-  // Separate core and rotating beers
-  const coreBeers = availableBeers.filter((beer) => beer.isCore)
-  const rotatingBeers = availableBeers.filter((beer) => !beer.isCore)
+  // Separate core and rotating beers (show all beers, including empty ones)
+  const coreBeers = screenBeers.filter((beer) => beer.isCore)
+  const rotatingBeers = screenBeers.filter((beer) => !beer.isCore)
 
   // Debug logging
   console.log(`Screen ${screenNumber}:`)
   console.log('All beers for this screen:', screenBeers.map(b => `Tap ${b.tapNumber}: ${b.name} (${b.status})`))
-  console.log('Available beers (non-empty):', availableBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
+  console.log('Available beers (non-empty):', screenBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
   console.log('Core beers:', coreBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
   console.log('Rotating beers:', rotatingBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
 
@@ -147,7 +144,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
                 beer.name.toLowerCase().includes('pale ale') ||
                 beer.name.toLowerCase().includes('cider')
               ).map((beer) => (
-                <div key={beer.id} className="beer-card">
+                <div key={beer.id} className={`beer-card ${beer.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                   <div className="beer-card-header">
                     <div className="beer-logo">
                       {beer.logo ? (
@@ -165,19 +162,33 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="beer-name">{beer.name}</h3>
-                      <p className="beer-brewery">{beer.brewery}</p>
+                      <h3 className={`beer-name ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
+                        {beer.name}
+                      </h3>
+                      <p className={`beer-brewery ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
+                        {beer.brewery}
+                      </p>
                     </div>
                   </div>
                   <div className="beer-card-content">
-                    <div className="beer-info">
-                      <p className="beer-details">{beer.style} • {beer.abv}</p>
-                      <p className="beer-details font-semibold">{beer.price}</p>
-                    </div>
-                    {beer.location && (
-                      <div className="beer-meta">
-                        <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
+                    {beer.status === 'keg_empty' ? (
+                      <div className="beer-info">
+                        <p className="beer-details text-primary/80 font-medium">
+                          keg empty :( new beer coming :)
+                        </p>
                       </div>
+                    ) : (
+                      <>
+                        <div className="beer-info">
+                          <p className="beer-details">{beer.style} • {beer.abv}</p>
+                          <p className="beer-details font-semibold">{beer.price}</p>
+                        </div>
+                        {beer.location && (
+                          <div className="beer-meta">
+                            <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -187,49 +198,59 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
             {/* Second row: Stout | Castle Logo | Radler */}
             <div className="flex justify-between items-stretch gap-4">
               {/* Stout - Left */}
-              {coreBeers.find(beer => beer.name.toLowerCase().includes('stout')) && (
-                <div className="beer-card flex-1 max-w-xs">
-                  {(() => {
-                    const stout = coreBeers.find(beer => beer.name.toLowerCase().includes('stout'))
-                    return (
-                      <>
-                        <div className="beer-card-header">
-                          <div className="beer-logo">
-                            {stout?.logo ? (
-                              <Image
-                                src={stout.logo}
-                                alt={`${stout.brewery} logo`}
-                                width={44}
-                                height={44}
-                                className="rounded-lg bg-white/10 p-1"
-                              />
-                            ) : (
-                              <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                                🍺
-                              </div>
-                            )}
+              {(() => {
+                const stout = coreBeers.find(beer => beer.name.toLowerCase().includes('stout'))
+                return stout && (
+                  <div className={`beer-card flex-1 max-w-xs ${stout.status === 'keg_empty' ? 'opacity-60' : ''}`}>
+                    <div className="beer-card-header">
+                      <div className="beer-logo">
+                        {stout.logo ? (
+                          <Image
+                            src={stout.logo}
+                            alt={`${stout.brewery} logo`}
+                            width={44}
+                            height={44}
+                            className="rounded-lg bg-white/10 p-1"
+                          />
+                        ) : (
+                          <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                            🍺
                           </div>
-                          <div className="flex-1">
-                            <h3 className="beer-name">{stout?.name}</h3>
-                            <p className="beer-brewery">{stout?.brewery}</p>
-                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className={`beer-name ${stout.status === 'keg_empty' ? 'line-through' : ''}`}>
+                          {stout.name}
+                        </h3>
+                        <p className={`beer-brewery ${stout.status === 'keg_empty' ? 'line-through' : ''}`}>
+                          {stout.brewery}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="beer-card-content">
+                      {stout.status === 'keg_empty' ? (
+                        <div className="beer-info">
+                          <p className="beer-details text-primary/80 font-medium">
+                            keg empty :( new beer coming :)
+                          </p>
                         </div>
-                        <div className="beer-card-content">
+                      ) : (
+                        <>
                           <div className="beer-info">
-                            <p className="beer-details">{stout?.style} • {stout?.abv}</p>
-                            <p className="beer-details font-semibold">{stout?.price}</p>
+                            <p className="beer-details">{stout.style} • {stout.abv}</p>
+                            <p className="beer-details font-semibold">{stout.price}</p>
                           </div>
-                          {stout?.location && (
+                          {stout.location && (
                             <div className="beer-meta">
                               <p className="beer-details text-primary/80 font-medium">{stout.location}</p>
                             </div>
                           )}
-                        </div>
-                      </>
-                    )
-                  })()}
-                </div>
-              )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
               
               {/* Castle Logo - Middle */}
               <div className="flex items-center justify-center flex-1">
@@ -244,49 +265,59 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
               </div>
               
               {/* Radler - Right */}
-              {coreBeers.find(beer => beer.name.toLowerCase().includes('radler')) && (
-                <div className="beer-card flex-1 max-w-xs">
-                  {(() => {
-                    const radler = coreBeers.find(beer => beer.name.toLowerCase().includes('radler'))
-                    return (
-                      <>
-                        <div className="beer-card-header">
-                          <div className="beer-logo">
-                            {radler?.logo ? (
-                              <Image
-                                src={radler.logo}
-                                alt={`${radler.brewery} logo`}
-                                width={44}
-                                height={44}
-                                className="rounded-lg bg-white/10 p-1"
-                              />
-                            ) : (
-                              <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                                🍺
-                              </div>
-                            )}
+              {(() => {
+                const radler = coreBeers.find(beer => beer.name.toLowerCase().includes('radler'))
+                return radler && (
+                  <div className={`beer-card flex-1 max-w-xs ${radler.status === 'keg_empty' ? 'opacity-60' : ''}`}>
+                    <div className="beer-card-header">
+                      <div className="beer-logo">
+                        {radler.logo ? (
+                          <Image
+                            src={radler.logo}
+                            alt={`${radler.brewery} logo`}
+                            width={44}
+                            height={44}
+                            className="rounded-lg bg-white/10 p-1"
+                          />
+                        ) : (
+                          <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                            🍺
                           </div>
-                          <div className="flex-1">
-                            <h3 className="beer-name">{radler?.name}</h3>
-                            <p className="beer-brewery">{radler?.brewery}</p>
-                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className={`beer-name ${radler.status === 'keg_empty' ? 'line-through' : ''}`}>
+                          {radler.name}
+                        </h3>
+                        <p className={`beer-brewery ${radler.status === 'keg_empty' ? 'line-through' : ''}`}>
+                          {radler.brewery}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="beer-card-content">
+                      {radler.status === 'keg_empty' ? (
+                        <div className="beer-info">
+                          <p className="beer-details text-primary/80 font-medium">
+                            keg empty :( new beer coming :)
+                          </p>
                         </div>
-                        <div className="beer-card-content">
+                      ) : (
+                        <>
                           <div className="beer-info">
-                            <p className="beer-details">{radler?.style} • {radler?.abv}</p>
-                            <p className="beer-details font-semibold">{radler?.price}</p>
+                            <p className="beer-details">{radler.style} • {radler.abv}</p>
+                            <p className="beer-details font-semibold">{radler.price}</p>
                           </div>
-                          {radler?.location && (
+                          {radler.location && (
                             <div className="beer-meta">
                               <p className="beer-details text-primary/80 font-medium">{radler.location}</p>
                             </div>
                           )}
-                        </div>
-                      </>
-                    )
-                  })()}
-                </div>
-              )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
           </section>
         )}
@@ -297,7 +328,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
             <h2 className="menu-section-title">ROTATING BEER</h2>
             <div className="grid">
               {rotatingBeers.map((beer, idx) => (
-                <div key={beer.id} className="beer-card">
+                <div key={beer.id} className={`beer-card ${beer.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                   <div className="beer-card-header">
                     <div className="beer-logo">
                       {beer.logo ? (
@@ -323,19 +354,33 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
                           </span>
                         )}
                       </div>
-                      <h3 className="beer-name">{beer.name}</h3>
-                      <p className="beer-brewery">{beer.brewery}</p>
+                      <h3 className={`beer-name ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
+                        {beer.name}
+                      </h3>
+                      <p className={`beer-brewery ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
+                        {beer.brewery}
+                      </p>
                     </div>
                   </div>
                   <div className="beer-card-content">
-                    <div className="beer-info">
-                      <p className="beer-details">{beer.style} • {beer.abv}</p>
-                      <p className="beer-details font-semibold">{beer.price}</p>
-                    </div>
-                    {beer.location && (
-                      <div className="beer-meta">
-                        <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
+                    {beer.status === 'keg_empty' ? (
+                      <div className="beer-info">
+                        <p className="beer-details text-primary/80 font-medium">
+                          keg empty :( new beer coming :)
+                        </p>
                       </div>
+                    ) : (
+                      <>
+                        <div className="beer-info">
+                          <p className="beer-details">{beer.style} • {beer.abv}</p>
+                          <p className="beer-details font-semibold">{beer.price}</p>
+                        </div>
+                        {beer.location && (
+                          <div className="beer-meta">
+                            <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
