@@ -163,6 +163,34 @@ export default function AdminPage() {
     }
   }
 
+  const handleToggleEmpty = async (beer: Beer) => {
+    const newStatus = beer.status === 'keg_empty' ? 'on_tap' : 'keg_empty'
+    const action = newStatus === 'keg_empty' ? 'mark as empty' : 'mark as on tap'
+    
+    if (!confirm(`Are you sure you want to ${action} for ${beer.name}?`)) return
+
+    try {
+      const response = await fetch('/api/beers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...beer,
+          status: newStatus,
+          tags: beer.tags ? JSON.parse(beer.tags) : []
+        })
+      })
+
+      if (response.ok) {
+        mutate('/api/beers')
+      } else {
+        alert('Failed to update beer status')
+      }
+    } catch (error) {
+      console.error('Status update error:', error)
+      alert('Failed to update beer status')
+    }
+  }
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -426,6 +454,13 @@ export default function AdminPage() {
                         onClick={() => handleDelete(beer.id)}
                       >
                         Delete
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleToggleEmpty(beer)}
+                      >
+                        {beer.status === 'keg_empty' ? 'Mark as On Tap' : 'Mark as Empty'}
                       </Button>
                     </div>
                   </div>
