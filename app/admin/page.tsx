@@ -19,6 +19,7 @@ interface Beer {
   tags?: string
   startDate: string
   endDate?: string
+  isCore: boolean
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -36,7 +37,8 @@ export default function AdminPage() {
     price: '',
     logo: '',
     status: 'on_tap',
-    tags: ''
+    tags: '',
+    isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
 
@@ -117,7 +119,8 @@ export default function AdminPage() {
           price: '',
           logo: '',
           status: 'on_tap',
-          tags: ''
+          tags: '',
+          isCore: false
         })
         setIsEditing(false)
         mutate('/api/beers')
@@ -142,7 +145,8 @@ export default function AdminPage() {
       price: beer.price,
       logo: beer.logo || '',
       status: beer.status,
-      tags: beer.tags ? JSON.parse(beer.tags).join(', ') : ''
+      tags: beer.tags ? JSON.parse(beer.tags).join(', ') : '',
+      isCore: beer.isCore
     })
     setIsEditing(true)
   }
@@ -188,6 +192,23 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Status update error:', error)
       alert('Failed to update beer status')
+    }
+  }
+
+  // Function to get the display identifier for a beer
+  const getBeerIdentifier = (beer: Beer) => {
+    if (beer.isCore) {
+      // Core beers get letters based on their tap number (0-5)
+      const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F']
+      const coreNames = ['Castle Brew', 'Hefeweizen', 'Pale Ale', 'Cider', 'Stout', 'Radler']
+      const index = beer.tapNumber
+      if (index >= 0 && index < coreLetters.length) {
+        return `${coreLetters[index]} - ${coreNames[index]}`
+      }
+      return 'CORE'
+    } else {
+      // Rotating beers get numbers
+      return `TAP ${beer.tapNumber}`
     }
   }
 
@@ -272,17 +293,51 @@ export default function AdminPage() {
             <form onSubmit={handleBeerSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="tapNumber">Tap Number (1-20)</Label>
-                  <Input
-                    id="tapNumber"
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={beerForm.tapNumber}
-                    onChange={(e) => setBeerForm({ ...beerForm, tapNumber: e.target.value })}
-                    required
-                  />
+                  <Label htmlFor="isCore">Beer Type</Label>
+                  <select
+                    id="isCore"
+                    value={beerForm.isCore ? 'true' : 'false'}
+                    onChange={(e) => setBeerForm({ ...beerForm, isCore: e.target.value === 'true' })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="false">Rotating Beer (Tap Number)</option>
+                    <option value="true">Core Beer (Letter)</option>
+                  </select>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tapNumber">
+                    {beerForm.isCore ? 'Core Beer Letter' : 'Tap Number (1-20)'}
+                  </Label>
+                  {beerForm.isCore ? (
+                    <select
+                      id="tapNumber"
+                      value={beerForm.tapNumber}
+                      onChange={(e) => setBeerForm({ ...beerForm, tapNumber: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Select Core Beer</option>
+                      <option value="0">A - Castle Brew (Tap 0)</option>
+                      <option value="1">B - Hefeweizen (Tap 1)</option>
+                      <option value="2">C - Pale Ale (Tap 2)</option>
+                      <option value="3">D - Cider (Tap 3)</option>
+                      <option value="4">E - Stout (Tap 4)</option>
+                      <option value="5">F - Radler (Tap 5)</option>
+                    </select>
+                  ) : (
+                    <Input
+                      id="tapNumber"
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={beerForm.tapNumber}
+                      onChange={(e) => setBeerForm({ ...beerForm, tapNumber: e.target.value })}
+                      required
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
                   <select
@@ -391,7 +446,8 @@ export default function AdminPage() {
                         price: '',
                         logo: '',
                         status: 'on_tap',
-                        tags: ''
+                        tags: '',
+                        isCore: false
                       })
                     }}
                   >
@@ -422,7 +478,7 @@ export default function AdminPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
-                          Tap {beer.tapNumber}
+                          {getBeerIdentifier(beer)}
                         </span>
                         {beer.status === 'keg_empty' && (
                           <span className="text-xs bg-destructive text-destructive-foreground px-2 py-1 rounded">
