@@ -46,6 +46,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error Loading Menu</h1>
           <p className="text-muted-foreground">Please refresh the page or contact staff</p>
+          <p className="text-sm text-muted-foreground mt-2">Error: {error.message}</p>
         </div>
       </div>
     )
@@ -62,10 +63,13 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     )
   }
 
+  // Ensure beers is an array before filtering
+  const beersArray = Array.isArray(beers) ? beers : []
+  
   // Filter beers based on screen (1-10 or 11-20)
   const startTap = screen === 1 ? 1 : 11
   const endTap = screen === 1 ? 10 : 20
-  const screenBeers = beers.filter(beer => beer.tapNumber >= startTap && beer.tapNumber <= endTap)
+  const screenBeers = beersArray.filter(beer => beer.tapNumber >= startTap && beer.tapNumber <= endTap)
 
   const toggleDarkMode = () => {
     const newDarkMode = !isDark
