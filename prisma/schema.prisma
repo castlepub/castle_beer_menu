@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Beer {
+  id         Int      @id @default(autoincrement())
+  tapNumber  Int      @unique @map("tap_number")
+  name       String
+  brewery    String
+  abv        String
+  style      String
+  price      String
+  logo       String?
+  status     String   @default("on_tap") // "on_tap" or "keg_empty"
+  tags       String?  // JSON string for tags like ["NEW", "LIMITED"]
+  startDate  DateTime @default(now()) @map("start_date")
+  endDate    DateTime? @map("end_date")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("beers")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String // bcrypt hashed
+  
+  @@map("users")
+} 
