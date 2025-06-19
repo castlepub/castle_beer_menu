@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import Image from 'next/image'
 
@@ -9,205 +9,359 @@ interface Beer {
   tapNumber: number
   name: string
   brewery: string
-  abv: string
   style: string
+  abv: string
   price: string
   logo?: string
   status: string
   tags?: string
-  startDate: string
-  endDate?: string
+  location?: string
+  isCore: boolean
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function DisplayPage({ params }: { params: { screen: string } }) {
-  const screen = parseInt(params.screen)
+  const [isDark, setIsDark] = useState(true)
+  const [changingTextIndex, setChangingTextIndex] = useState(0)
+  const screenNumber = parseInt(params.screen)
+
   const { data: beers, error } = useSWR<Beer[]>('/api/beers', fetcher, {
     refreshInterval: 30000, // Auto-refresh every 30 seconds
+    onSuccess: (data) => {
+      console.log('Fetched beers:', data)
+    },
+    onError: (err) => {
+      console.error('Error fetching beers:', err)
+    }
   })
 
-  const [isDark, setIsDark] = useState(false)
+  const toggleDarkMode = () => {
+    setIsDark(!isDark)
+  }
 
+  // Changing text for display 1
+  const changingTexts = [
+    "Fresh craft beers on tap!",
+    "Try our seasonal specials",
+    "Local and imported favorites",
+    "Perfect pints every time"
+  ]
+
+  // Rotate changing text every 8 seconds (increased from 5)
   useEffect(() => {
-    // Check for dark mode preference
-    const darkMode = localStorage.getItem('darkMode') === 'true' || 
-                     window.matchMedia('(prefers-color-scheme: dark)').matches
-    setIsDark(darkMode)
-    
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
+    const interval = setInterval(() => {
+      setChangingTextIndex((prev) => (prev + 1) % changingTexts.length)
+    }, 8000)
+    return () => clearInterval(interval)
+  }, [changingTexts.length])
+
+  // Ensure beers is an array before filtering
+  const beersArray = Array.isArray(beers) ? beers : []
+  console.log('beersArray:', beersArray)
+
+  // Filter beers based on screen number
+  const screenBeers = beersArray.filter((beer) => {
+    if (screenNumber === 1) {
+      return beer.tapNumber >= 1 && beer.tapNumber <= 10
+    } else if (screenNumber === 2) {
+      return beer.tapNumber >= 11 && beer.tapNumber <= 20
     }
-  }, [])
+    return false
+  })
+
+  // Separate core and rotating beers
+  const coreBeers = screenBeers.filter((beer) => beer.isCore)
+  const rotatingBeers = screenBeers.filter((beer) => !beer.isCore)
+
+  // Debug logging
+  console.log(`Screen ${screenNumber}:`)
+  console.log('All beers for this screen:', screenBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
+  console.log('Core beers:', coreBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
+  console.log('Rotating beers:', rotatingBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
+
+  // Calculate the starting tap number for rotating beers on this screen
+  let rotatingStart = 1
+  if (screenNumber > 1) {
+    // Count all rotating beers on previous screens
+    const previousRotating = beersArray.filter(
+      (beer) => !beer.isCore && beer.tapNumber < (screenNumber - 1) * 10 + 1
+    ).length
+    rotatingStart = previousRotating + 1
+  }
 
   if (error) {
+    console.error('DisplayPage error:', error)
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">Error Loading Menu</h1>
-          <p className="text-muted-foreground">Please refresh the page or contact staff</p>
-          <p className="text-sm text-muted-foreground mt-2">Error: {error.message}</p>
+      <div className="tv-display p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold mb-4 text-center">Error loading menu</h1>
+          <p className="text-center text-muted-foreground">Please try refreshing the page</p>
         </div>
       </div>
     )
   }
 
   if (!beers) {
+    console.log('No beers loaded yet, beers:', beers)
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-xl text-muted-foreground">Loading tap menu...</p>
+      <div className="tv-display p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold mb-4 text-center">Loading menu...</h1>
         </div>
       </div>
     )
   }
 
-  // Ensure beers is an array before filtering
-  const beersArray = Array.isArray(beers) ? beers : []
-  
-  // Filter beers based on screen (1-10 or 11-20)
-  const startTap = screen === 1 ? 1 : 11
-  const endTap = screen === 1 ? 10 : 20
-  const screenBeers = beersArray.filter(beer => beer.tapNumber >= startTap && beer.tapNumber <= endTap)
-
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDark
-    setIsDark(newDarkMode)
-    localStorage.setItem('darkMode', newDarkMode.toString())
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground tv-display">
+    <div className={`tv-display ${isDark ? 'dark' : ''}`}>
       {/* Header */}
-      <div className="bg-primary text-primary-foreground p-6 shadow-lg">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold">🏰 The Castle Tap Menu</h1>
-            <p className="text-xl opacity-90">
-              Taps {startTap}-{endTap} • Live Updates
-            </p>
-          </div>
+      <div className="header-section">
+        <div className="flex justify-between items-center w-full px-8">
+          <h1 className="text-4xl font-bold text-center flex-1">ON TAP</h1>
           <button
             onClick={toggleDarkMode}
-            className="p-2 bg-primary-foreground text-primary rounded-lg hover:opacity-80 transition-opacity"
+            className="p-2 bg-primary/10 text-primary/60 rounded-lg hover:bg-primary/20 transition-colors"
           >
             {isDark ? '☀️' : '🌙'}
           </button>
         </div>
       </div>
 
-      {/* Beer Grid */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-          {Array.from({ length: 10 }, (_, index) => {
-            const tapNumber = startTap + index
-            const beer = screenBeers.find(b => b.tapNumber === tapNumber)
+      {/* Content */}
+      <div className="content-section">
+        {/* Core Range Beers */}
+        {coreBeers.length > 0 && (
+          <section className="menu-section">
+            <h2 className="menu-section-title">CORE RANGE BEER</h2>
             
-            return (
-              <div
-                key={tapNumber}
-                className={`beer-card p-6 rounded-xl border-2 shadow-lg ${
-                  beer 
-                    ? beer.status === 'keg_empty' 
-                      ? 'bg-muted border-muted keg-empty' 
-                      : 'bg-card border-border hover:border-primary'
-                    : 'bg-muted border-muted opacity-50'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Tap Number */}
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg">
-                      {tapNumber}
+            {/* First row: Castle Brew, Hefeweizen, Pale Ale, Cider */}
+            <div className="grid mb-4">
+              {coreBeers.filter(beer => 
+                beer.name.toLowerCase().includes('castle brew') ||
+                beer.name.toLowerCase().includes('hefeweizen') ||
+                beer.name.toLowerCase().includes('pale ale') ||
+                beer.name.toLowerCase().includes('cider')
+              ).map((beer) => (
+                <div key={beer.id} className="beer-card">
+                  <div className="beer-card-header">
+                    <div className="beer-logo">
+                      {beer.logo ? (
+                        <Image
+                          src={beer.logo}
+                          alt={`${beer.brewery} logo`}
+                          width={44}
+                          height={44}
+                          className="rounded-lg bg-white/10 p-1"
+                        />
+                      ) : (
+                        <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                          🍺
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="beer-name">{beer.name}</h3>
+                      <p className="beer-brewery">{beer.brewery}</p>
                     </div>
                   </div>
-
-                  {/* Beer Logo */}
-                  <div className="flex-shrink-0">
-                    {beer?.logo ? (
-                      <Image
-                        src={beer.logo}
-                        alt={`${beer.name} logo`}
-                        width={64}
-                        height={64}
-                        className="beer-logo"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = 'none'
-                        }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-muted border-2 border-border rounded-full flex items-center justify-center">
-                        🍺
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Beer Info */}
-                  <div className="flex-1 min-w-0">
-                    {beer ? (
-                      <>
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-xl font-bold text-foreground truncate">
-                              {beer.name}
-                            </h3>
-                            <p className="text-lg text-muted-foreground">
-                              {beer.brewery}
-                            </p>
-                          </div>
-                          {beer.tags && (
-                            <div className="flex gap-1 ml-2">
-                              {JSON.parse(beer.tags).map((tag: string) => (
-                                <span
-                                  key={tag}
-                                  className="px-2 py-1 bg-accent text-accent-foreground text-xs font-semibold rounded-full"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-1">
-                          <p className="text-sm text-muted-foreground">
-                            <span className="font-medium">{beer.style}</span> • {beer.abv}
-                          </p>
-                          <p className="text-lg font-semibold text-primary">
-                            {beer.price}
-                          </p>
-                        </div>
-
-                        {beer.status === 'keg_empty' && (
-                          <p className="text-sm text-destructive font-medium mt-2">
-                            🚫 Keg Empty
-                          </p>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-muted-foreground">No beer on tap</p>
+                  <div className="beer-card-content">
+                    <div className="beer-info">
+                      <p className="beer-details">{beer.style} • {beer.abv}</p>
+                      <p className="beer-details font-semibold">{beer.price}</p>
+                    </div>
+                    {beer.location && (
+                      <div className="beer-meta">
+                        <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
                       </div>
                     )}
                   </div>
                 </div>
+              ))}
+            </div>
+            
+            {/* Second row: Stout | Castle Logo | Radler */}
+            <div className="flex justify-between items-stretch gap-4">
+              {/* Stout - Left */}
+              {coreBeers.find(beer => beer.name.toLowerCase().includes('stout')) && (
+                <div className="beer-card flex-1 max-w-xs">
+                  {(() => {
+                    const stout = coreBeers.find(beer => beer.name.toLowerCase().includes('stout'))
+                    return (
+                      <>
+                        <div className="beer-card-header">
+                          <div className="beer-logo">
+                            {stout?.logo ? (
+                              <Image
+                                src={stout.logo}
+                                alt={`${stout.brewery} logo`}
+                                width={44}
+                                height={44}
+                                className="rounded-lg bg-white/10 p-1"
+                              />
+                            ) : (
+                              <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                                🍺
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="beer-name">{stout?.name}</h3>
+                            <p className="beer-brewery">{stout?.brewery}</p>
+                          </div>
+                        </div>
+                        <div className="beer-card-content">
+                          <div className="beer-info">
+                            <p className="beer-details">{stout?.style} • {stout?.abv}</p>
+                            <p className="beer-details font-semibold">{stout?.price}</p>
+                          </div>
+                          {stout?.location && (
+                            <div className="beer-meta">
+                              <p className="beer-details text-primary/80 font-medium">{stout.location}</p>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )
+                  })()}
+                </div>
+              )}
+              
+              {/* Castle Logo - Middle */}
+              <div className="flex items-center justify-center flex-1">
+                <Image
+                  src="/static/castlologo5iiiii.png"
+                  alt="The Castle Logo"
+                  width={350}
+                  height={350}
+                  className="max-w-full h-auto"
+                  priority
+                />
               </div>
-            )
-          })}
-        </div>
-      </div>
+              
+              {/* Radler - Right */}
+              {coreBeers.find(beer => beer.name.toLowerCase().includes('radler')) && (
+                <div className="beer-card flex-1 max-w-xs">
+                  {(() => {
+                    const radler = coreBeers.find(beer => beer.name.toLowerCase().includes('radler'))
+                    return (
+                      <>
+                        <div className="beer-card-header">
+                          <div className="beer-logo">
+                            {radler?.logo ? (
+                              <Image
+                                src={radler.logo}
+                                alt={`${radler.brewery} logo`}
+                                width={44}
+                                height={44}
+                                className="rounded-lg bg-white/10 p-1"
+                              />
+                            ) : (
+                              <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                                🍺
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="beer-name">{radler?.name}</h3>
+                            <p className="beer-brewery">{radler?.brewery}</p>
+                          </div>
+                        </div>
+                        <div className="beer-card-content">
+                          <div className="beer-info">
+                            <p className="beer-details">{radler?.style} • {radler?.abv}</p>
+                            <p className="beer-details font-semibold">{radler?.price}</p>
+                          </div>
+                          {radler?.location && (
+                            <div className="beer-meta">
+                              <p className="beer-details text-primary/80 font-medium">{radler.location}</p>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )
+                  })()}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
-      {/* Footer */}
-      <div className="text-center p-4 text-sm text-muted-foreground">
-        <p>Updated: {new Date().toLocaleTimeString()} • Auto-refresh every 30 seconds</p>
+        {/* Rotating Beers */}
+        {rotatingBeers.length > 0 && (
+          <section className="menu-section">
+            <h2 className="menu-section-title">ROTATING BEER</h2>
+            <div className="grid">
+              {rotatingBeers.map((beer, idx) => (
+                <div key={beer.id} className="beer-card">
+                  <div className="beer-card-header">
+                    <div className="beer-logo">
+                      {beer.logo ? (
+                        <Image
+                          src={beer.logo}
+                          alt={`${beer.brewery} logo`}
+                          width={44}
+                          height={44}
+                          className="rounded-lg bg-white/10 p-1"
+                        />
+                      ) : (
+                        <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
+                          🍺
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="tap-number">TAP {rotatingStart + idx}</span>
+                        {beer.tags && (
+                          <span className="inline-block px-2 py-0.5 text-xs font-bold bg-accent text-accent-foreground rounded uppercase tracking-wider">
+                            {JSON.parse(beer.tags)[0]}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="beer-name">{beer.name}</h3>
+                      <p className="beer-brewery">{beer.brewery}</p>
+                    </div>
+                  </div>
+                  <div className="beer-card-content">
+                    <div className="beer-info">
+                      <p className="beer-details">{beer.style} • {beer.abv}</p>
+                      <p className="beer-details font-semibold">{beer.price}</p>
+                    </div>
+                    {beer.location && (
+                      <div className="beer-meta">
+                        <p className="beer-details text-primary/80 font-medium">{beer.location}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Additional content based on screen */}
+        {screenNumber === 1 && (
+          <div className="mt-4 text-center">
+            <p className="text-4xl font-semibold text-primary/80 animate-pulse">
+              {changingTexts[changingTextIndex]}
+            </p>
+          </div>
+        )}
+
+        {screenNumber === 2 && (
+          <div className="mt-4 text-center">
+            <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
+              <h3 className="text-2xl font-bold text-primary mb-2">JOIN OUR LOYALTY PROGRAM</h3>
+              <p className="text-lg text-muted-foreground">
+                Earn points with every pint • Exclusive member discounts
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Ask our staff for details
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

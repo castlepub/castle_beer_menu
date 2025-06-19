@@ -3,18 +3,21 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    // Check if DATABASE_URL is set
+    // Set DATABASE_URL if not present (for development)
     if (!process.env.DATABASE_URL) {
-      console.error('DATABASE_URL environment variable is not set')
-      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 })
+      process.env.DATABASE_URL = 'file:./dev.db'
+      console.log('API: Setting DATABASE_URL fallback:', process.env.DATABASE_URL)
     }
-
+    
+    // Log the environment variable for debugging
+    console.log('API: process.env.DATABASE_URL:', process.env.DATABASE_URL)
+    
     const beers = await prisma.beer.findMany({
       orderBy: { tapNumber: 'asc' },
     })
     return NextResponse.json(beers)
   } catch (error) {
-    console.error('Error fetching beers:', error)
+    console.error('Error fetching beers (API):', error)
     
     // Check if it's a Prisma initialization error
     if (error instanceof Error && error.message.includes('DATABASE_URL')) {
@@ -34,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { tapNumber, name, brewery, abv, style, price, logo, status, tags } = body
+    const { tapNumber, name, brewery, abv, style, price, logo, status, tags, isCore, startDate, endDate } = body
 
     const beer = await prisma.beer.create({
       data: {
@@ -47,6 +50,9 @@ export async function POST(request: NextRequest) {
         logo: logo || null,
         status: status || 'on_tap',
         tags: tags ? JSON.stringify(tags) : null,
+        isCore: isCore || false,
+        startDate: startDate ? new Date(startDate) : new Date(),
+        endDate: endDate ? new Date(endDate) : null,
       },
     })
 
@@ -64,7 +70,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags } = body
+    const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags, isCore, startDate, endDate } = body
 
     const beer = await prisma.beer.update({
       where: { id: parseInt(id) },
@@ -78,7 +84,9 @@ export async function PUT(request: NextRequest) {
         logo: logo || null,
         status,
         tags: tags ? JSON.stringify(tags) : null,
-        endDate: status === 'keg_empty' ? new Date() : null,
+        isCore,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : null,
       },
     })
 

@@ -2,253 +2,233 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-const sampleBeers = [
-  {
-    tapNumber: 1,
-    name: "Castle IPA",
-    brewery: "The Castle Brewery",
-    abv: "6.2%",
-    style: "India Pale Ale",
-    price: "0.3L €5.50 / 0.5L €7.50",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["HOUSE", "POPULAR"])
-  },
-  {
-    tapNumber: 2,
-    name: "Golden Pilsner",
-    brewery: "Bavarian Craft",
-    abv: "4.8%",
-    style: "Pilsner",
-    price: "0.3L €4.50 / 0.5L €6.00",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["NEW"])
-  },
-  {
-    tapNumber: 3,
-    name: "Stout Porter",
-    brewery: "Dark Horse Brewing",
-    abv: "5.8%",
-    style: "Stout",
-    price: "0.3L €5.00 / 0.5L €6.80",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["LIMITED"])
-  },
-  {
-    tapNumber: 4,
-    name: "Wheat Hefeweizen",
-    brewery: "Bavarian Craft",
-    abv: "5.4%",
-    style: "Hefeweizen",
-    price: "0.3L €4.80 / 0.5L €6.50",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 5,
-    name: "Amber Ale",
-    brewery: "Mountain Brew Co",
-    abv: "5.2%",
-    style: "Amber Ale",
-    price: "0.3L €4.20 / 0.5L €5.80",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "keg_empty",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 6,
-    name: "Sour Cherry",
-    brewery: "Fruit Craft Brewery",
-    abv: "4.1%",
-    style: "Sour Ale",
-    price: "0.3L €6.00 / 0.5L €8.00",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["NEW", "LIMITED"])
-  },
-  {
-    tapNumber: 7,
-    name: "Lager Classic",
-    brewery: "Traditional Brews",
-    abv: "4.5%",
-    style: "Lager",
-    price: "0.3L €3.80 / 0.5L €5.20",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 8,
-    name: "Double IPA",
-    brewery: "Hop Masters",
-    abv: "8.2%",
-    style: "Double IPA",
-    price: "0.3L €7.50 / 0.5L €10.00",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["STRONG"])
-  },
-  {
-    tapNumber: 9,
-    name: "Belgian Tripel",
-    brewery: "Monastery Brewery",
-    abv: "9.0%",
-    style: "Tripel",
-    price: "0.3L €8.00 / 0.5L €11.00",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["LIMITED", "STRONG"])
-  },
-  {
-    tapNumber: 10,
-    name: "Session Pale",
-    brewery: "Light Brew Co",
-    abv: "3.8%",
-    style: "Pale Ale",
-    price: "0.3L €4.00 / 0.5L €5.50",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["SESSION"])
-  },
-  {
-    tapNumber: 11,
-    name: "Red Ale",
-    brewery: "Irish Craft",
-    abv: "5.0%",
-    style: "Red Ale",
-    price: "0.3L €4.50 / 0.5L €6.20",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 12,
-    name: "Porter Classic",
-    brewery: "Dark Horse Brewing",
-    abv: "5.5%",
-    style: "Porter",
-    price: "0.3L €5.20 / 0.5L €7.00",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 13,
-    name: "Wheat Beer",
-    brewery: "Bavarian Craft",
-    abv: "5.1%",
-    style: "Wheat Beer",
-    price: "0.3L €4.60 / 0.5L €6.30",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 14,
-    name: "Blonde Ale",
-    brewery: "Summer Brews",
-    abv: "4.8%",
-    style: "Blonde Ale",
-    price: "0.3L €4.30 / 0.5L €5.90",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 15,
-    name: "Brown Ale",
-    brewery: "Traditional Brews",
-    abv: "5.3%",
-    style: "Brown Ale",
-    price: "0.3L €4.70 / 0.5L €6.40",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 16,
-    name: "Saison",
-    brewery: "Farmhouse Brewery",
-    abv: "6.0%",
-    style: "Saison",
-    price: "0.3L €6.50 / 0.5L €8.80",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["NEW"])
-  },
-  {
-    tapNumber: 17,
-    name: "Scotch Ale",
-    brewery: "Highland Brewing",
-    abv: "7.2%",
-    style: "Scotch Ale",
-    price: "0.3L €7.00 / 0.5L €9.50",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["STRONG"])
-  },
-  {
-    tapNumber: 18,
-    name: "Kolsch",
-    brewery: "German Craft",
-    abv: "4.8%",
-    style: "Kolsch",
-    price: "0.3L €4.90 / 0.5L €6.60",
-    logo: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify([])
-  },
-  {
-    tapNumber: 19,
-    name: "Barleywine",
-    brewery: "Strong Ale Co",
-    abv: "10.5%",
-    style: "Barleywine",
-    price: "0.3L €9.00 / 0.5L €12.00",
-    logo: "https://images.unsplash.com/photo-1518176258765-fa3b1d41dae0?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["LIMITED", "STRONG"])
-  },
-  {
-    tapNumber: 20,
-    name: "Light Lager",
-    brewery: "Traditional Brews",
-    abv: "3.5%",
-    style: "Light Lager",
-    price: "0.3L €3.50 / 0.5L €4.80",
-    logo: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center",
-    status: "on_tap",
-    tags: JSON.stringify(["SESSION"])
-  }
-]
-
 async function main() {
-  console.log('🌱 Starting database seeding...')
-  
-  // Clear existing data
+  // Delete all existing beers
   await prisma.beer.deleteMany()
-  console.log('🗑️  Cleared existing beer data')
-  
-  // Insert sample beers
-  for (const beer of sampleBeers) {
+
+  // Core Range Beers
+  const coreBeers = [
+    {
+      tapNumber: 1,
+      name: "CASTLE BREW PILS",
+      brewery: "HOPSCOR BREWING",
+      style: "Pilsner",
+      abv: "5% ABV",
+      price: "0,3L €3 / 0,5L €4.50",
+      status: "on_tap",
+      isCore: true,
+      tags: JSON.stringify(["HOUSE"]),
+      location: "Bar",
+    },
+    {
+      tapNumber: 2,
+      name: "HEFEWEIZEN",
+      brewery: "WEIHENSTEPHAN",
+      style: "Wheat Beer",
+      abv: "5.4% ABV",
+      price: "0,5L €5",
+      status: "on_tap",
+      isCore: true,
+      location: "Bar",
+    },
+    {
+      tapNumber: 3,
+      name: "PALE ALE",
+      brewery: "HOPSCOR BREWING",
+      style: "Pale Ale",
+      abv: "4.5% ABV",
+      price: "0,3L €4 / 0,5L €5.50",
+      status: "on_tap",
+      isCore: true,
+      location: "Garden",
+    },
+    {
+      tapNumber: 4,
+      name: "CIDER",
+      brewery: "STOWFORD",
+      style: "Cider",
+      abv: "4.5% ABV",
+      price: "0,3L €5.50 / 0,5L €7",
+      status: "on_tap",
+      isCore: true,
+      location: "Bar",
+    },
+    {
+      tapNumber: 5,
+      name: "STOUT",
+      brewery: "GUINNESS",
+      style: "Stout",
+      abv: "4.2% ABV",
+      price: "0,3L €5.50 / 0,5L €7",
+      status: "on_tap",
+      isCore: true,
+      location: "Upstairs",
+    },
+    {
+      tapNumber: 6,
+      name: "RADLER",
+      brewery: "THE CASTLE",
+      style: "Radler",
+      abv: "2.5% ABV",
+      price: "0,3L €3.50 / 0,5L €5",
+      status: "on_tap",
+      isCore: true,
+      tags: JSON.stringify(["HOUSE"]),
+      location: "Garden",
+    },
+  ]
+
+  // Rotating Beers
+  const rotatingBeers = [
+    {
+      tapNumber: 7,
+      name: "FLORIAN BOCKBIER",
+      brewery: "QUELLMALZ",
+      style: "Bockbier",
+      abv: "6.8% ABV",
+      price: "0,3L €4 / 0,5L €5.50",
+      status: "on_tap",
+      tags: JSON.stringify(["NEW"]),
+      location: "Bar",
+    },
+    {
+      tapNumber: 8,
+      name: "HELLES",
+      brewery: "WEIHENSTEPHAN",
+      style: "Lager",
+      abv: "4.8% ABV",
+      price: "0,3L €4.50 / 0,5L €6",
+      status: "on_tap",
+      location: "Garden",
+    },
+    {
+      tapNumber: 9,
+      name: "DIETER",
+      brewery: "QUELLMALZ",
+      style: "Spez Pils",
+      abv: "5.3% ABV",
+      price: "0,3L €4.50 / 0,5L €6",
+      status: "on_tap",
+      location: "Upstairs",
+    },
+    {
+      tapNumber: 10,
+      name: "IPA",
+      brewery: "STONE BREWING",
+      style: "India Pale Ale",
+      abv: "6.9% ABV",
+      price: "0,3L €5 / 0,5L €6.50",
+      status: "on_tap",
+      location: "Bar",
+    },
+    {
+      tapNumber: 11,
+      name: "PORTER",
+      brewery: "FULLER'S",
+      style: "Porter",
+      abv: "5.4% ABV",
+      price: "0,3L €5.50 / 0,5L €7",
+      status: "on_tap",
+      location: "Garden",
+    },
+    {
+      tapNumber: 12,
+      name: "SAISON",
+      brewery: "DUPONT",
+      style: "Saison",
+      abv: "6.5% ABV",
+      price: "0,3L €6 / 0,5L €7.50",
+      status: "on_tap",
+      location: "Upstairs",
+    },
+    {
+      tapNumber: 13,
+      name: "BELGIAN TRIPEL",
+      brewery: "ST. BERNARDUS",
+      style: "Tripel",
+      abv: "8% ABV",
+      price: "0,3L €6 / 0,5L €7.50",
+      status: "keg_empty",
+      tags: JSON.stringify(["STRONG"]),
+      logo: "https://via.placeholder.com/64x64/FFD700/000000?text=BERNARDUS",
+    },
+    {
+      tapNumber: 14,
+      name: "FESTBIER",
+      brewery: "PAULANER",
+      style: "Märzen",
+      abv: "6% ABV",
+      price: "0,5L €5.50",
+      status: "on_tap",
+      tags: JSON.stringify(["SEASONAL"]),
+      logo: "https://via.placeholder.com/64x64/FFA500/000000?text=PAULANER",
+    },
+    {
+      tapNumber: 15,
+      name: "WEST COAST IPA",
+      brewery: "BEVOG",
+      style: "IPA",
+      abv: "6.5% ABV",
+      price: "0,3L €5 / 0,5L €6.50",
+      status: "on_tap",
+      logo: "https://via.placeholder.com/64x64/4169E1/FFFFFF?text=BEVOG",
+    },
+    {
+      tapNumber: 16,
+      name: "SCHWARZBIER",
+      brewery: "KÖSTRITZER",
+      style: "Black Lager",
+      abv: "4.8% ABV",
+      price: "0,3L €4 / 0,5L €5.50",
+      status: "on_tap",
+      logo: "https://via.placeholder.com/64x64/000000/FFFFFF?text=KOSTRITZER",
+    },
+    {
+      tapNumber: 17,
+      name: "HEFEWEIZEN DUNKEL",
+      brewery: "WEIHENSTEPHAN",
+      style: "Dark Wheat Beer",
+      abv: "5.3% ABV",
+      price: "0,5L €5",
+      status: "on_tap",
+      logo: "https://via.placeholder.com/64x64/FFA500/000000?text=WEIHEN",
+    },
+    {
+      tapNumber: 18,
+      name: "BARLEYWINE",
+      brewery: "LERVIG",
+      style: "Barleywine",
+      abv: "12% ABV",
+      price: "0,2L €7.50",
+      status: "on_tap",
+      tags: JSON.stringify(["LIMITED", "STRONG"]),
+      logo: "https://via.placeholder.com/64x64/8B4513/FFFFFF?text=LERVIG",
+    },
+    {
+      tapNumber: 19,
+      name: "BERLINER WEISSE",
+      brewery: "LEMKE",
+      style: "Sour Wheat",
+      abv: "3.5% ABV",
+      price: "0,3L €4 / 0,5L €5.50",
+      status: "on_tap",
+      logo: "https://via.placeholder.com/64x64/87CEEB/000000?text=LEMKE",
+    },
+  ]
+
+  // Create all beers
+  for (const beer of [...coreBeers, ...rotatingBeers]) {
     await prisma.beer.create({
-      data: beer
+      data: beer,
     })
   }
-  
-  console.log(`✅ Successfully seeded ${sampleBeers.length} beers!`)
-  console.log('🍺 Sample beers added:')
-  sampleBeers.forEach(beer => {
-    console.log(`   Tap ${beer.tapNumber}: ${beer.name} by ${beer.brewery}`)
-  })
+
+  console.log('Database has been seeded. 🍺')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e)
+    console.error(e)
     process.exit(1)
   })
   .finally(async () => {
