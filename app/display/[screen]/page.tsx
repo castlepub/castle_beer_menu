@@ -70,13 +70,17 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     return false
   })
 
+  // Filter out empty taps - only show beers that are actually on tap
+  const availableBeers = screenBeers.filter((beer) => beer.status !== 'keg_empty')
+
   // Separate core and rotating beers
-  const coreBeers = screenBeers.filter((beer) => beer.isCore)
-  const rotatingBeers = screenBeers.filter((beer) => !beer.isCore)
+  const coreBeers = availableBeers.filter((beer) => beer.isCore)
+  const rotatingBeers = availableBeers.filter((beer) => !beer.isCore)
 
   // Debug logging
   console.log(`Screen ${screenNumber}:`)
-  console.log('All beers for this screen:', screenBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
+  console.log('All beers for this screen:', screenBeers.map(b => `Tap ${b.tapNumber}: ${b.name} (${b.status})`))
+  console.log('Available beers (non-empty):', availableBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
   console.log('Core beers:', coreBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
   console.log('Rotating beers:', rotatingBeers.map(b => `Tap ${b.tapNumber}: ${b.name}`))
 
