@@ -47,6 +47,7 @@ ADMIN_PASSWORD="castle123"
 ```bash
 npx prisma generate
 npx prisma db push
+npm run db:seed  # Add sample beer data
 ```
 
 ### 4. Run Development
@@ -56,6 +57,20 @@ npm run dev
 ```
 
 Visit `http://localhost:3000` to see the application.
+
+## Sample Data
+
+The application comes with 20 sample beers across all taps:
+
+- **Tap 1**: Castle IPA (House beer)
+- **Tap 2**: Golden Pilsner (New)
+- **Tap 3**: Stout Porter (Limited)
+- **Tap 5**: Amber Ale (Keg Empty - shows strikethrough)
+- **Tap 6**: Sour Cherry (New + Limited)
+- **Tap 8**: Double IPA (Strong)
+- **Tap 9**: Belgian Tripel (Limited + Strong)
+- **Tap 16**: Saison (New)
+- **Tap 19**: Barleywine (Limited + Strong)
 
 ## Usage
 
@@ -83,6 +98,40 @@ Visit `http://localhost:3000` to see the application.
 </iframe>
 ```
 
+## Railway Deployment
+
+### 1. Push to GitHub
+
+```bash
+git remote add origin https://github.com/yourusername/castle-tap-menu.git
+git branch -M main
+git push -u origin main
+```
+
+### 2. Deploy on Railway
+
+1. **Connect Repository**: 
+   - Go to [Railway.app](https://railway.app)
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your repository
+
+2. **Environment Variables**: Set in Railway dashboard:
+   ```
+   DATABASE_URL=file:./data/prod.db
+   ADMIN_USERNAME=your-admin-username
+   ADMIN_PASSWORD=your-secure-password
+   NODE_ENV=production
+   ```
+
+3. **Deploy**: Railway will automatically build and deploy
+
+### 3. Custom Domain (Optional)
+
+In Railway dashboard:
+1. Go to your service settings
+2. Click "Custom Domains"
+3. Add your domain and update DNS records
+
 ## Beer Schema
 
 Each beer includes:
@@ -103,26 +152,6 @@ Each beer includes:
 }
 ```
 
-## Deployment
-
-### Railway Deployment
-
-1. **Connect Repository**: Link your Git repository to Railway
-2. **Environment Variables**: Set in Railway dashboard:
-   ```
-   DATABASE_URL=file:./data/prod.db
-   ADMIN_USERNAME=your-admin-username
-   ADMIN_PASSWORD=your-secure-password
-   ```
-3. **Deploy**: Railway will automatically build and deploy
-
-### Custom Domain Setup
-
-In Railway:
-1. Go to your service settings
-2. Add custom domain
-3. Update DNS records as instructed
-
 ## API Endpoints
 
 - `GET /api/beers` - Fetch all beers
@@ -142,6 +171,7 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 npm run db:generate  # Generate Prisma client
 npm run db:push      # Push schema to database
+npm run db:seed      # Add sample beer data
 npm run db:studio    # Open Prisma Studio
 ```
 
@@ -170,10 +200,25 @@ Current setup uses simple username/password. For production:
 
 ⚠️ **Important for Production**:
 
-1. **Change default credentials** in `.env.local`
-2. **Use HTTPS** in production
+1. **Change default credentials** in Railway environment variables
+2. **Use HTTPS** (Railway provides this automatically)
 3. **Regular backups** of SQLite database
 4. **Update dependencies** regularly
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database not found**: Run `npx prisma db push`
+2. **Build fails**: Check Node.js version (requires 18+)
+3. **Images not loading**: Check CORS settings for external images
+4. **Login not working**: Verify environment variables
+
+### Railway Specific
+
+1. **Build timeout**: Check `railway.toml` configuration
+2. **Database persistence**: Railway uses ephemeral storage by default
+3. **Custom domain**: May take up to 24 hours for DNS propagation
 
 ## Support
 
