@@ -8,7 +8,7 @@ interface BeerLogoProps {
   className?: string
 }
 
-export function BeerLogo({ src, alt, size = 40, className = '' }: BeerLogoProps) {
+export function BeerLogo({ src, alt, size = 44, className = '' }: BeerLogoProps) {
   const [imageError, setImageError] = useState(false)
 
   if (!src || imageError) {

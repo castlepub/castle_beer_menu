@@ -35,4 +35,12 @@ model User {
   @@map("users")
 }
 
+model CustomMessage {
+  id      Int    @id @default(autoincrement())
+  key     String @unique
+  content String
+  
+  @@map("custom_messages")
+}
+
  
