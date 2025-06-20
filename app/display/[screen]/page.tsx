@@ -21,6 +21,14 @@ interface Beer {
   isCore: boolean;
 }
 
+interface RotatingMessage {
+  id: number;
+  text: string;
+  duration: number;
+  color: string;
+  order: number;
+}
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 const BeerItem = ({ beer }: { beer: Beer }) => {
@@ -60,14 +68,39 @@ const BeerItem = ({ beer }: { beer: Beer }) => {
 export default function DisplayPage({ params }: { params: { screen: string } }) {
   const { data: beers, error } = useSWR<Beer[]>('/api/beers', fetcher, { refreshInterval: 5000 });
   const screenNumber = parseInt(params.screen, 10);
+  const isDisplay1 = screenNumber === 1;
+
+  // Only fetch messages for Display 2
+  const { data: messages } = useSWR<RotatingMessage[]>(
+    !isDisplay1 ? '/api/messages' : null, 
+    fetcher, 
+    { refreshInterval: 30000 }
+  );
 
   const [isDark, setIsDark] = useState(false);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.className = savedTheme;
     setIsDark(savedTheme === 'dark');
   }, []);
+
+  // Handle message rotation for Display 2 only
+  useEffect(() => {
+    if (!isDisplay1 && messages && messages.length > 0) {
+      const currentMessage = messages[currentMessageIndex];
+      const duration = (currentMessage?.duration || 8) * 1000;
+      
+      const interval = setInterval(() => {
+        setCurrentMessageIndex((prevIndex) => 
+          (prevIndex + 1) % messages.length
+        );
+      }, duration);
+
+      return () => clearInterval(interval);
+    }
+  }, [messages, currentMessageIndex, isDisplay1]);
 
   const toggleDarkMode = () => {
     const newTheme = document.documentElement.className === 'light' ? 'dark' : 'light';
@@ -87,8 +120,6 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
   const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
 
-  const isDisplay1 = screenNumber === 1;
-
   let leftColumnBeers, rightColumnBeers;
   let leftColumnTitle, rightColumnTitle;
 
@@ -107,6 +138,11 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     leftColumnTitle = "ROTATING BEER";
     rightColumnTitle = "ROTATING BEER";
   }
+
+  // Get current message for Display 2
+  const currentMessage = !isDisplay1 && messages && messages.length > 0 
+    ? messages[currentMessageIndex] 
+    : null;
   
   return (
     <div className={`tv-display-new ${!isDisplay1 ? 'display-2-large' : ''}`}>
@@ -141,6 +177,14 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
       </main>
 
       <footer className="display-footer">
+        {currentMessage && (
+          <div 
+            className="rotating-text"
+            style={{ color: currentMessage.color }}
+          >
+            {currentMessage.text}
+          </div>
+        )}
       </footer>
     </div>
   );

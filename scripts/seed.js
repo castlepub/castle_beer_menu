@@ -299,7 +299,26 @@ async function main() {
   // })
   console.log('- Default message created')
 
-  console.log(`Seeding finished.`)
+  console.log('✅ All beers have been seeded successfully!')
+
+  // Seed rotating messages
+  console.log('🔄 Seeding rotating messages...')
+  await prisma.rotatingMessage.deleteMany({})
+  
+  const defaultMessages = [
+    { text: 'Follow us on Instagram @TheCastle', order: 1, duration: 8, color: '#FFFFFF' },
+    { text: 'Quiz Night every Wednesday 8PM', order: 2, duration: 8, color: '#FFD700' },
+    { text: 'Happy Hour: 5-7PM weekdays', order: 3, duration: 8, color: '#FFFFFF' },
+    { text: 'Book your table online', order: 4, duration: 8, color: '#87CEEB' },
+  ]
+  
+  for (const msg of defaultMessages) {
+    await prisma.rotatingMessage.create({ data: msg })
+  }
+  
+  console.log('✅ Rotating messages seeded!')
+
+  console.log('Database seeding completed!')
 }
 
 main()

@@ -44,4 +44,16 @@ model CustomMessage {
   @@map("custom_messages")
 }
 
+model RotatingMessage {
+  id        Int     @id @default(autoincrement())
+  text      String
+  order     Int     @default(0)
+  duration  Int     @default(8)  // seconds to display
+  color     String  @default("#FFFFFF")
+  isActive  Boolean @default(true)
+  createdAt DateTime @default(now())
+  
+  @@map("rotating_messages")
+}
+
  

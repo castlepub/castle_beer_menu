@@ -25,6 +25,15 @@ interface Beer {
   isCore: boolean
 }
 
+interface RotatingMessage {
+  id: number
+  text: string
+  duration: number
+  color: string
+  order: number
+  isActive: boolean
+}
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function AdminPage() {
@@ -44,6 +53,17 @@ export default function AdminPage() {
     isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
+  
+  // Message management state
+  const [messageForm, setMessageForm] = useState({
+    id: '',
+    text: '',
+    duration: 8,
+    color: '#FFFFFF',
+    order: 1,
+    isActive: true
+  })
+  const [isEditingMessage, setIsEditingMessage] = useState(false)
 
 
   const { data: beers, error } = useSWR<Beer[]>(
@@ -52,12 +72,11 @@ export default function AdminPage() {
     { refreshInterval: 30000 }
   )
 
-
-
-  useEffect(() => {
-    // Check if already logged in (cookie-based)
-    checkAuth()
-  }, [])
+  const { data: messages, mutate: mutateMessages } = useSWR<RotatingMessage[]>(
+    isLoggedIn ? '/api/messages' : null,
+    fetcher,
+    { refreshInterval: 30000 }
+  )
 
   useEffect(() => {
     // Check if already logged in (cookie-based)
@@ -206,8 +225,6 @@ export default function AdminPage() {
     }
   }
 
-
-
   const getBeerIdentifier = (beer: Beer) => {
     if (beer.isCore) {
       const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -223,6 +240,69 @@ export default function AdminPage() {
       return (rotatingIndex + 1).toString();
     }
   };
+
+  // Message management handlers
+  const handleMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const method = isEditingMessage ? 'PUT' : 'POST'
+      const response = await fetch('/api/messages', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...messageForm,
+          id: isEditingMessage ? parseInt(messageForm.id) : undefined
+        })
+      })
+
+      if (response.ok) {
+        setMessageForm({
+          id: '',
+          text: '',
+          duration: 8,
+          color: '#FFFFFF',
+          order: 1,
+          isActive: true
+        })
+        setIsEditingMessage(false)
+        mutateMessages()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to save message')
+      }
+    } catch (error) {
+      console.error('Save message error:', error)
+      alert('Failed to save message')
+    }
+  }
+
+  const handleEditMessage = (message: RotatingMessage) => {
+    setMessageForm({
+      id: message.id.toString(),
+      text: message.text,
+      duration: message.duration,
+      color: message.color,
+      order: message.order,
+      isActive: message.isActive
+    })
+    setIsEditingMessage(true)
+  }
+
+  const handleDeleteMessage = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this message?')) return
+
+    try {
+      const response = await fetch(`/api/messages?id=${id}`, { method: 'DELETE' })
+      if (response.ok) {
+        mutateMessages()
+      } else {
+        alert('Failed to delete message')
+      }
+    } catch (error) {
+      console.error('Delete message error:', error)
+      alert('Failed to delete message')
+    }
+  }
 
   if (error) {
     return (
@@ -602,6 +682,171 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* Rotating Messages Management */}
+        <div className="mt-8 pt-8 border-t">
+          <h2 className="text-2xl font-bold mb-6">🔄 Rotating Messages (Display 2)</h2>
+          
+          {/* Message Form */}
+          <div className="bg-card p-6 rounded-lg border mb-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {isEditingMessage ? 'Edit Message' : 'Add New Message'}
+            </h3>
+            <form onSubmit={handleMessageSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="message-text">Message Text</Label>
+                <Input
+                  id="message-text"
+                  value={messageForm.text}
+                  onChange={(e) => setMessageForm({ ...messageForm, text: e.target.value })}
+                  placeholder="Enter your message..."
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="message-duration">Duration (seconds)</Label>
+                  <Input
+                    id="message-duration"
+                    type="number"
+                    min="3"
+                    max="30"
+                    value={messageForm.duration}
+                    onChange={(e) => setMessageForm({ ...messageForm, duration: parseInt(e.target.value) || 8 })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message-color">Text Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="message-color"
+                      type="color"
+                      value={messageForm.color}
+                      onChange={(e) => setMessageForm({ ...messageForm, color: e.target.value })}
+                      className="w-16 h-10"
+                    />
+                    <select
+                      value={messageForm.color}
+                      onChange={(e) => setMessageForm({ ...messageForm, color: e.target.value })}
+                      className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="#FFFFFF">White</option>
+                      <option value="#FFD700">Gold</option>
+                      <option value="#87CEEB">Sky Blue</option>
+                      <option value="#98FB98">Light Green</option>
+                      <option value="#FFA07A">Light Salmon</option>
+                      <option value="#DDA0DD">Plum</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message-order">Display Order</Label>
+                  <Input
+                    id="message-order"
+                    type="number"
+                    min="1"
+                    value={messageForm.order}
+                    onChange={(e) => setMessageForm({ ...messageForm, order: parseInt(e.target.value) || 1 })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="message-active"
+                    checked={messageForm.isActive}
+                    onChange={(e) => setMessageForm({ ...messageForm, isActive: e.target.checked })}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <Label htmlFor="message-active">Active</Label>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button type="submit">
+                    {isEditingMessage ? 'Update Message' : 'Add Message'}
+                  </Button>
+                  {isEditingMessage && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditingMessage(false)
+                        setMessageForm({
+                          id: '',
+                          text: '',
+                          duration: 8,
+                          color: '#FFFFFF',
+                          order: 1,
+                          isActive: true
+                        })
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </form>
+          </div>
+
+          {/* Messages List */}
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold">Current Messages</h3>
+            {messages && messages.length > 0 ? (
+              messages
+                .sort((a, b) => a.order - b.order)
+                .map((message) => (
+                  <div
+                    key={message.id}
+                    className="flex items-center justify-between p-4 border rounded-lg bg-card"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium bg-primary text-primary-foreground px-2 py-1 rounded">
+                          #{message.order}
+                        </span>
+                        <span className="text-sm">{message.duration}s</span>
+                        <div
+                          className="w-4 h-4 rounded border"
+                          style={{ backgroundColor: message.color }}
+                        />
+                        {!message.isActive && (
+                          <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">Inactive</span>
+                        )}
+                      </div>
+                      <p className="font-medium" style={{ color: message.color }}>
+                        {message.text}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditMessage(message)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeleteMessage(message.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                No messages added yet. Add your first message using the form.
+              </div>
+            )}
+          </div>
+        </div>
 
       </div>
     </div>
