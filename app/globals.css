@@ -163,11 +163,14 @@ body {
 }
 
 .rotating-text {
-  font-size: 3.5rem; /* Increased from 2.5rem */
+  font-size: clamp(1.5rem, 5vw, 3.5rem); /* Responsive: 1.5rem minimum, 3.5rem maximum */
   font-weight: bold;
   text-align: center;
   animation: fadeInOut 1s ease-in-out;
   line-height: 1.2;
+  padding: 0 1rem; /* Add some side padding for mobile */
+  word-wrap: break-word; /* Handle long words */
+  max-width: 100%; /* Ensure it doesn't overflow */
 }
 
 @keyframes fadeInOut {
