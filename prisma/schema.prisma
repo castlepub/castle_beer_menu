@@ -22,10 +22,7 @@ model Beer {
   logo        String?
   status      String   @default("on_tap")
   tags        String?
-  isCore      Boolean  @default(false) @map("is_core")
   location    String?
-  startDate   DateTime @default(now()) @map("start_date")
-  endDate     DateTime? @map("end_date")
   
   @@map("beers")
 }
