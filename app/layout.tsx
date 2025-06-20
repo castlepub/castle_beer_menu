@@ -5,11 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'The Castle Tap Menu',
-  description: 'Live beer tap menu management system',
-  icons: {
-    icon: '/favicon.ico',
-  },
+  title: 'Castle Beer Menu',
+  description: 'Live beer menu for The Castle',
 }
 
 export default function RootLayout({
@@ -19,9 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 } 

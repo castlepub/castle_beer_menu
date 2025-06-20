@@ -2,248 +2,193 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 10%;
-    --popover: 0 0% 98%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 0%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 98%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 98%;
-  }
+:root {
+  --font-sans: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
+/* --- THEME DEFINITIONS --- */
+.light {
+  --bg-color: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #4a4a4a;
+  --border-color: #cccccc;
+  --logo-opacity: 0.07;
 }
 
-/* Custom styles for TV displays */
-.tv-display {
-  font-family: 'Inter', system-ui, sans-serif;
-  @apply min-h-screen w-full;
-  @apply flex flex-col;
-  @apply bg-background text-foreground;
+.dark {
+  --bg-color: #000000;
+  --text-primary: #FFFFFF;
+  --text-secondary: #cccccc;
+  --border-color: #555555;
+  --logo-opacity: 0.12;
+}
+/* --- END THEMES --- */
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tv-display-new {
+  position: relative;
+  width: 100vw;
   height: 100vh;
+  padding: 1.5rem 2.5rem; /* V-H padding reduced */
+  background-color: var(--bg-color);
   overflow: hidden;
-}
-
-/* Header section */
-.header-section {
-  @apply border-b border-border/20;
-  @apply bg-card/50 backdrop-blur-sm;
-  @apply py-2;
-  height: 7vh;
-  min-height: 45px;
-  display: flex;
-  align-items: center;
-}
-
-/* Content section */
-.content-section {
-  @apply flex-1;
-  height: 93vh;
-  overflow: hidden;
-  padding: 1rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Menu sections */
-.menu-section {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.menu-section-title {
-  @apply text-3xl font-bold mb-3 text-primary tracking-wider uppercase;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+.central-header {
+  position: absolute;
+  top: 0.5rem; /* Adjusted */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: clamp(2rem, 5vw, 3rem); /* Adjusted */
+  font-weight: 900;
+  color: var(--text-primary);
+  opacity: 0.6;
+  letter-spacing: 0.2em;
 }
 
-/* Grid layout */
-.menu-section .grid {
-  display: grid;
-  gap: 1rem;
+.central-logo-new {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: var(--logo-opacity);
+  z-index: 1;
+}
+
+.columns-container {
+  display: flex;
   flex: 1;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: minmax(0, 1fr);
+  gap: 3rem; /* Adjusted */
+  z-index: 5;
+  position: relative;
+  margin-top: 4rem; /* Adjusted */
+  overflow: hidden; /* Prevent columns from overflowing page */
 }
 
-/* Beer cards */
-.beer-card {
-  @apply transition-all duration-300 ease-in-out bg-card/90 backdrop-blur-sm;
-  @apply border border-border/50 rounded-xl;
-  @apply hover:border-primary/30 hover:bg-card/95;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Beer card header */
-.beer-card-header {
-  @apply p-3 border-b border-border/50;
-  display: flex;
-  align-items: center;
-  gap: 3;
-}
-
-/* Beer card content */
-.beer-card-content {
-  @apply p-3;
+.beer-column {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 0.5rem; /* Adjusted */
 }
 
-.beer-info {
-  flex: 1;
-}
-
-.beer-meta {
-  @apply mt-2;
-}
-
-.beer-name {
-  @apply text-3xl font-extrabold tracking-wide leading-tight;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.12);
-}
-
-.beer-brewery {
-  @apply text-xl text-muted-foreground mt-1;
-}
-
-.beer-details {
-  @apply text-lg text-muted-foreground;
-}
-
-.beer-details.font-semibold {
-  @apply text-2xl font-extrabold text-primary mt-1;
-}
-
-/* Tap number styling */
-.tap-number {
-  @apply text-2xl font-extrabold text-primary bg-primary/10 px-3 py-1 rounded-lg;
-  @apply uppercase tracking-wider;
-  letter-spacing: 0.1em;
-  min-width: 55px;
+.column-title {
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem); /* Adjusted */
+  font-weight: 700;
   text-align: center;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 
-/* Beer logo */
-.beer-logo {
-  @apply flex-shrink-0 mr-3;
-  width: 44px;
-  height: 44px;
+.beer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem; /* Adjusted */
+  flex-grow: 1;
 }
 
-.beer-logo img,
-.beer-logo div {
-  width: 100%;
-  height: 100%;
-  @apply rounded-lg;
+.beer-item {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 1.2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.8rem;
 }
 
-/* Dark mode specific styles */
-.dark .tv-display {
-  @apply bg-black text-white;
+.beer-item-logo {
+  width: 72px;
+  height: 72px;
 }
 
-.dark .beer-card {
-  @apply bg-gray-900/90 border-gray-700/50;
-  @apply hover:border-gray-600/50 hover:bg-gray-900/95;
+.beer-item-info {
+  /* Takes up remaining space */
 }
 
-.dark .beer-card-header {
-  @apply border-gray-700/50;
+.beer-item-header {
+  font-size: clamp(1rem, 2vw, 1.4rem); /* Adjusted */
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.dark .header-section {
-  @apply bg-gray-900/50 border-gray-700/20;
+.beer-item-sub {
+  font-size: clamp(0.8rem, 1.5vw, 1rem); /* Adjusted */
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
 }
 
-.dark .menu-section-title {
-  @apply text-white;
+.beer-item-price {
+  font-size: clamp(1rem, 2vw, 1.3rem); /* Adjusted */
+  font-weight: 700;
+  text-align: right;
+  color: var(--text-primary);
+  white-space: pre-wrap; /* Allows line breaks from <br> */
 }
 
-.dark .beer-name {
-  @apply text-white;
+.new-tag {
+  display: inline-block;
+  background-color: #ffc107;
+  color: #111;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+  font-weight: 700;
+  margin-left: 0.5rem;
 }
 
-.dark .beer-brewery {
-  @apply text-gray-300;
-}
-
-.dark .beer-details {
-  @apply text-gray-400;
-}
-
-.dark .tap-number {
-  @apply bg-yellow-500/20 text-yellow-400;
-}
-
-.dark .beer-tag {
-  @apply bg-orange-500/20 text-orange-400;
-}
-
-/* Fit-to-screen scaling for many beers */
-@media (max-height: 900px) {
-  .beer-name { font-size: 2.2rem; }
-  .beer-details.font-semibold { font-size: 1.3rem; }
-  .tap-number { font-size: 2rem; min-width: 50px; padding: 0.5rem 1rem; }
-  .beer-card { padding: 1.2rem; }
-}
-@media (max-height: 700px) {
-  .beer-name { font-size: 1.5rem; }
-  .beer-details.font-semibold { font-size: 1.1rem; }
-  .tap-number { font-size: 1.2rem; min-width: 40px; padding: 0.3rem 0.7rem; }
-  .beer-card { padding: 0.7rem; }
+.display-footer {
+  text-align: center;
+  padding-top: 1rem;
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem); /* Adjusted */
+  font-weight: 600;
+  color: var(--text-secondary);
+  z-index: 5;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .keg-empty {
-  @apply opacity-60;
-  @apply grayscale;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.loading-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  background-color: #000;
+  color: #fff;
+}
+
+.theme-toggle-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 2.5rem;
+  z-index: 20;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--text-secondary);
+  color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.theme-toggle-button:hover {
+  opacity: 0.8;
 } 

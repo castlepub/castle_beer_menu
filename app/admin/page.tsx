@@ -44,6 +44,10 @@ export default function AdminPage() {
     isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
+  const [displayMessageForm, setDisplayMessageForm] = useState({
+    screen: 1,
+    content: ''
+  })
 
   const { data: beers, error } = useSWR<Beer[]>(
     isLoggedIn ? '/api/beers' : null,
@@ -51,10 +55,28 @@ export default function AdminPage() {
     { refreshInterval: 30000 }
   )
 
+  const { data: displayMessage, mutate: mutateDisplayMessage } = useSWR(
+    isLoggedIn ? `/api/display-messages?screen=${displayMessageForm.screen}` : null,
+    fetcher
+  )
+
   useEffect(() => {
     // Check if already logged in (cookie-based)
     checkAuth()
   }, [])
+
+  useEffect(() => {
+    // Update form when display message data loads for the selected screen
+    if (displayMessage) {
+      setDisplayMessageForm(prev => ({
+        ...prev,
+        content: displayMessage.content || ''
+      }))
+    } else {
+      // Clear content when switching to a screen with no message
+      setDisplayMessageForm(prev => ({ ...prev, content: '' }));
+    }
+  }, [displayMessage])
 
   const checkAuth = async () => {
     try {
@@ -198,22 +220,50 @@ export default function AdminPage() {
     }
   }
 
-  // Function to get the display identifier for a beer
   const getBeerIdentifier = (beer: Beer) => {
     if (beer.isCore) {
-      // Core beers get letters based on their tap number (0-5)
-      const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F']
-      const coreNames = ['Castle Brew Pils', 'Hefeweizen', 'Pale Ale', 'Cider', 'Stout', 'Radler']
-      const index = beer.tapNumber - 1 // Subtract 1 to get 0-based index
+      const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+      const index = beer.tapNumber - 1;
       if (index >= 0 && index < coreLetters.length) {
-        return `${coreLetters[index]} - ${coreNames[index]}`
+        return coreLetters[index];
       }
-      return 'CORE'
+      return 'CORE';
     } else {
-      // Rotating beers get numbers
-      return `TAP ${beer.tapNumber}`
+      // Rotating beers get numbers, but we need to find their position among rotating beers
+      const rotatingBeers = beers?.filter(b => !b.isCore).sort((a,b) => a.tapNumber - b.tapNumber) || [];
+      const rotatingIndex = rotatingBeers.findIndex(b => b.id === beer.id);
+      return (rotatingIndex + 1).toString();
+    }
+  };
+
+  const handleDisplayMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('/api/display-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(displayMessageForm)
+      })
+
+      if (response.ok) {
+        alert('Display message saved successfully!')
+        mutateDisplayMessage()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to save display message')
+      }
+    } catch (error) {
+      console.error('Save display message error:', error)
+      alert('Failed to save display message')
     }
   }
+
+  // Sort beers for display: core first, then rotating by tap number
+  const sortedBeers = beers ? [...beers].sort((a, b) => {
+    if (a.isCore && !b.isCore) return -1;
+    if (!a.isCore && b.isCore) return 1;
+    return a.tapNumber - b.tapNumber;
+  }) : [];
 
   if (!isLoggedIn) {
     return (
@@ -495,14 +545,14 @@ export default function AdminPage() {
 
           {/* Beer List */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Current Beers</h2>
+            <h2 className="text-xl font-semibold">Current Beers on Tap</h2>
             
             {error && (
               <div className="text-destructive">Error loading beers: {error.message}</div>
             )}
             
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
-              {beers?.map((beer) => (
+            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-4">
+              {sortedBeers.map((beer) => (
                 <div
                   key={beer.id}
                   className={`p-4 border rounded-lg ${
@@ -511,20 +561,18 @@ export default function AdminPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex items-start gap-3 flex-1">
-                      <BeerLogo 
-                        src={beer.logo} 
-                        alt={`${beer.brewery} logo`}
-                        size={40}
-                      />
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center text-xl font-bold">
+                          {getBeerIdentifier(beer)}
+                        </div>
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
                             {getBeerIdentifier(beer)}
                           </span>
                           {beer.status === 'keg_empty' && (
-                            <span className="text-xs bg-destructive text-destructive-foreground px-2 py-1 rounded">
-                              Empty
-                            </span>
+                            <span className="text-xs font-semibold bg-red-100 text-red-800 px-2 py-1 rounded-full">Empty</span>
                           )}
                           {beer.tags && JSON.parse(beer.tags).map((tag: string) => (
                             <TagIcon 
@@ -535,10 +583,11 @@ export default function AdminPage() {
                             />
                           ))}
                         </div>
-                        <h3 className="font-semibold mt-1">{beer.name}</h3>
+                        <h3 className="text-xl font-bold">{beer.name}</h3>
                         <p className="text-sm text-muted-foreground">{beer.brewery}</p>
                         <p className="text-sm">{beer.style} • {beer.abv}</p>
                         <p className="text-sm font-medium text-primary">{beer.price}</p>
+                        {beer.isCore && <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Core Beer</span>}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -568,13 +617,80 @@ export default function AdminPage() {
                 </div>
               ))}
               
-              {beers?.length === 0 && (
+              {!beers && (
                 <div className="text-center py-8 text-muted-foreground">
-                  No beers added yet. Add your first beer above!
+                  Loading beers...
+                </div>
+              )}
+
+              {beers && beers.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No beers added yet. Add your first beer using the form.
                 </div>
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Display Message Editor */}
+      <div className="p-6 max-w-4xl mx-auto mt-8">
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Display Message Editor</h2>
+          
+          <form onSubmit={handleDisplayMessageSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="screen">Display Screen</Label>
+              <select
+                id="screen"
+                value={displayMessageForm.screen}
+                onChange={(e) => {
+                  const screen = parseInt(e.target.value);
+                  setDisplayMessageForm({ ...displayMessageForm, screen });
+                  // We don't need to manually clear here, the `useEffect` will handle it.
+                }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value={1}>Display 1</option>
+                <option value={2}>Display 2</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="content">Message Content</Label>
+              <textarea
+                id="content"
+                value={displayMessageForm.content}
+                onChange={(e) => setDisplayMessageForm({ 
+                  ...displayMessageForm, 
+                  content: e.target.value 
+                })}
+                rows={8}
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
+                placeholder="Enter your message here... You can use basic HTML tags like &lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, etc."
+              />
+              <p className="text-xs text-muted-foreground">
+                Supports basic HTML: &lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;h3&gt;, &lt;p&gt;, etc.
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button type="submit">
+                Save Message
+              </Button>
+            </div>
+          </form>
+
+          {/* Preview */}
+          {displayMessageForm.content && (
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">Preview:</h3>
+              <div 
+                className="p-4 border rounded-lg bg-card"
+                dangerouslySetInnerHTML={{ __html: displayMessageForm.content }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
