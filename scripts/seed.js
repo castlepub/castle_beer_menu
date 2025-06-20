@@ -17,7 +17,7 @@ async function main() {
       isCore: true,
       tags: JSON.stringify(['HOUSE']),
       location: 'Bar',
-      logo: '/static/logo/hopscor.png',
+      logo: '/logo/hopscor.png',
     },
     {
       tapNumber: 2,
@@ -29,7 +29,7 @@ async function main() {
       status: 'on_tap',
       isCore: true,
       location: 'Bar',
-      logo: '/static/logo/weihenstephan.jpg',
+      logo: '/logo/weihenstephan.jpg',
     },
     {
       tapNumber: 3,
@@ -41,7 +41,7 @@ async function main() {
       status: 'on_tap',
       isCore: true,
       location: 'Garden',
-      logo: '/static/logo/hopscor.png',
+      logo: '/logo/hopscor.png',
     },
     {
       tapNumber: 4,
@@ -53,7 +53,7 @@ async function main() {
       status: 'on_tap',
       isCore: true,
       location: 'Bar',
-      logo: '/static/logo/stowford.jpg'
+      logo: '/logo/stowford.jpg'
     },
     {
       tapNumber: 5,
@@ -65,7 +65,7 @@ async function main() {
       status: 'on_tap',
       isCore: true,
       location: 'Upstairs',
-      logo: '/static/logo/guinness.jpg'
+      logo: '/logo/guinness.jpg'
     },
     {
       tapNumber: 6,
@@ -78,7 +78,7 @@ async function main() {
       isCore: true,
       tags: JSON.stringify(['HOUSE']),
       location: 'Garden',
-      logo: '/static/logo/castle.png',
+      logo: '/logo/castle.png',
     },
   ]
 

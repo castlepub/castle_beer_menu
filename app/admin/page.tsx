@@ -319,7 +319,7 @@ export default function AdminPage() {
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <Image
-              src="/static/logo/castle.png"
+              src="/logo/castle.png"
               alt="The Castle Logo"
               width={48}
               height={48}
@@ -484,15 +484,15 @@ export default function AdminPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   <option value="">No Logo</option>
-                  <option value="/static/logo/hopscor.png">Hopscor Brewing</option>
-                  <option value="/static/logo/weihenstephan.jpg">Weihenstephan</option>
-                  <option value="/static/logo/strassenbrau.png">Strassenbrau</option>
-                  <option value="/static/logo/Brlo.png">Brlo</option>
-                  <option value="/static/logo/castle.png">Castle</option>
-                  <option value="/static/logo/braugier.png">Braugier</option>
-                  <option value="/static/logo/fuerst wiacek.png">Fuerst Wiacek</option>
-                  <option value="/static/logo/stowford.jpg">Stowford</option>
-                  <option value="/static/logo/guinness.jpg">Guinness</option>
+                  <option value="/logo/hopscor.png">Hopscor Brewing</option>
+                  <option value="/logo/weihenstephan.jpg">Weihenstephan</option>
+                  <option value="/logo/strassenbrau.png">Strassenbrau</option>
+                  <option value="/logo/Brlo.png">Brlo</option>
+                  <option value="/logo/castle.png">Castle</option>
+                  <option value="/logo/braugier.png">Braugier</option>
+                  <option value="/logo/fuerst wiacek.png">Fuerst Wiacek</option>
+                  <option value="/logo/stowford.jpg">Stowford</option>
+                  <option value="/logo/guinness.jpg">Guinness</option>
                   <option value="custom">Custom URL...</option>
                 </select>
                 {beerForm.logo === 'custom' && (

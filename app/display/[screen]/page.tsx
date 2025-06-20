@@ -111,7 +111,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
         <h1>ON TAP</h1>
       </div>
       <div className="central-logo-new">
-        <Image src="/static/castlologo5iiiii.png" alt="The Castle Logo" width={300} height={300} style={{ objectFit: 'contain' }} />
+        <Image src="/castlologo5iiiii.png" alt="The Castle Logo" width={300} height={300} style={{ objectFit: 'contain' }} />
       </div>
 
       <main className="columns-container">

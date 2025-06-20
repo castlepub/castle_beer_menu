@@ -1,5 +1,17 @@
 import Image from 'next/image'
 
+type TagName = 'NEW' | 'LIMITED' | 'STRONG' | 'SEASONAL' | 'HOUSE' | 'POPULAR' | 'AWARD';
+
+const tagIcons: Record<TagName, string> = {
+  'NEW': '/icons/new.svg',
+  'LIMITED': '/icons/limited.svg',
+  'STRONG': '/icons/strong.svg',
+  'SEASONAL': '/icons/seasonal.svg',
+  'HOUSE': '/icons/house.svg',
+  'POPULAR': '/icons/popular.svg',
+  'AWARD': '/icons/award.svg',
+};
+
 interface TagIconProps {
   tag: string
   size?: number
@@ -7,18 +19,7 @@ interface TagIconProps {
 }
 
 export function TagIcon({ tag, size = 16, className = '' }: TagIconProps) {
-  // Map tags to their icon files (support both PNG and SVG)
-  const tagIcons: Record<string, string> = {
-    'NEW': '/static/icons/new.svg',
-    'LIMITED': '/static/icons/limited.svg',
-    'STRONG': '/static/icons/strong.svg',
-    'SEASONAL': '/static/icons/seasonal.svg',
-    'HOUSE': '/static/icons/house.svg',
-    'POPULAR': '/static/icons/popular.svg',
-    'AWARD': '/static/icons/award.svg',
-  }
-
-  const iconPath = tagIcons[tag.toUpperCase()]
+  const iconPath = tagIcons[tag.toUpperCase() as TagName]
 
   if (!iconPath) {
     // Fallback to text if no icon is available
