@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { BeerLogo } from '@/components/ui/beer-logo'
+import { TagIcon } from '@/components/ui/tag-icon'
 import useSWR, { mutate } from 'swr'
+import Image from 'next/image'
 
 interface Beer {
   id: number
@@ -257,9 +259,18 @@ export default function AdminPage() {
       {/* Header */}
       <div className="bg-primary text-primary-foreground p-4 shadow-lg">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <div>
-            <h1 className="text-2xl font-bold">🏰 Admin Dashboard</h1>
-            <p className="opacity-90">Manage tap menu</p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/static/logo/castle.png"
+              alt="The Castle Logo"
+              width={48}
+              height={48}
+              className="rounded-lg"
+            />
+            <div>
+              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              <p className="opacity-90">Manage tap menu</p>
+            </div>
           </div>
           <div className="flex gap-4">
             <Button
@@ -441,10 +452,13 @@ export default function AdminPage() {
                 <Label htmlFor="tags">Tags (optional, comma-separated)</Label>
                 <Input
                   id="tags"
-                  placeholder="NEW, LIMITED"
+                  placeholder="NEW, LIMITED, STRONG, SEASONAL, HOUSE"
                   value={beerForm.tags}
                   onChange={(e) => setBeerForm({ ...beerForm, tags: e.target.value })}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Available tags: NEW, LIMITED, STRONG, SEASONAL, HOUSE, POPULAR, AWARD
+                </p>
               </div>
 
               <div className="flex gap-2">
@@ -513,9 +527,12 @@ export default function AdminPage() {
                             </span>
                           )}
                           {beer.tags && JSON.parse(beer.tags).map((tag: string) => (
-                            <span key={tag} className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded">
-                              {tag}
-                            </span>
+                            <TagIcon 
+                              key={tag} 
+                              tag={tag} 
+                              size={16}
+                              className="ml-1"
+                            />
                           ))}
                         </div>
                         <h3 className="font-semibold mt-1">{beer.name}</h3>

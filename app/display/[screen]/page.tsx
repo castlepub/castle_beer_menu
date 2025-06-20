@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import Image from 'next/image'
 import { BeerLogo } from '@/components/ui/beer-logo'
+import { TagIcon } from '@/components/ui/tag-icon'
 
 interface Beer {
   id: number
@@ -317,11 +318,14 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="tap-number">TAP {rotatingStart + idx}</span>
-                        {beer.tags && (
-                          <span className="inline-block px-2 py-0.5 text-xs font-bold bg-accent text-accent-foreground rounded uppercase tracking-wider">
-                            {JSON.parse(beer.tags)[0]}
-                          </span>
-                        )}
+                        {beer.tags && JSON.parse(beer.tags).map((tag: string, tagIdx: number) => (
+                          <TagIcon 
+                            key={tagIdx} 
+                            tag={tag} 
+                            size={20}
+                            className="ml-1"
+                          />
+                        ))}
                       </div>
                       <h3 className={`beer-name ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
                         {beer.name}
