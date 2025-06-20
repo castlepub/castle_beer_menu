@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-releaseCommand = "npx prisma generate && npx prisma db push --force-reset && node scripts/seed.js"
+releaseCommand = "npx prisma generate"
 startCommand = "npm start"
 healthcheckPath = "/"
 healthcheckTimeout = 300
