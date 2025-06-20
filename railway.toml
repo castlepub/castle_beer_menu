@@ -3,7 +3,7 @@ builder = "nixpacks"
 
 [deploy]
 releaseCommand = "npx prisma generate"
-startCommand = "npm start"
+startCommand = "npm run start:prod"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
