@@ -23,7 +23,7 @@ interface Beer {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-const BeerItem = ({ beer, tapNumberToShow }: { beer: Beer, tapNumberToShow?: number }) => {
+const BeerItem = ({ beer }: { beer: Beer }) => {
   const isNew = beer.tags && JSON.parse(beer.tags).includes('new');
   const isEmpty = beer.status === 'keg_empty';
 
@@ -35,7 +35,7 @@ const BeerItem = ({ beer, tapNumberToShow }: { beer: Beer, tapNumberToShow?: num
       <div className="beer-item-info">
         <p className={`beer-item-header ${isEmpty ? 'line-through' : ''}`}>
           <strong>
-            {tapNumberToShow && `${tapNumberToShow}. `}
+            {!beer.isCore && `${beer.tapNumber}. `}
             {beer.name.toUpperCase()}
           </strong>
           {' - '}
@@ -61,8 +61,6 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const { data: beers, error } = useSWR<Beer[]>('/api/beers', fetcher, { refreshInterval: 5000 });
   const screenNumber = parseInt(params.screen, 10);
 
-
-  
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -91,12 +89,23 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
 
   const isDisplay1 = screenNumber === 1;
 
-  const leftColumnBeers = isDisplay1 ? coreBeers.slice(0, 6) : rotatingBeers.slice(5, 9);
-  const rightColumnBeers = isDisplay1 ? rotatingBeers.slice(0, 5) : rotatingBeers.slice(9, 13);
-  
-  const leftColumnTitle = isDisplay1 ? "CORE RANGE BEER" : "ROTATING BEER";
-  const rightColumnTitle = "ROTATING BEER";
+  let leftColumnBeers, rightColumnBeers;
+  let leftColumnTitle, rightColumnTitle;
 
+  if (isDisplay1) {
+    leftColumnBeers = coreBeers;
+    rightColumnBeers = rotatingBeers.slice(0, 5);
+    leftColumnTitle = "CORE RANGE BEER";
+    rightColumnTitle = "ROTATING BEER";
+  } else {
+    const remainingRotating = rotatingBeers.slice(5);
+    const midPoint = Math.ceil(remainingRotating.length / 2);
+    leftColumnBeers = remainingRotating.slice(0, midPoint);
+    rightColumnBeers = remainingRotating.slice(midPoint);
+    leftColumnTitle = "ROTATING BEER";
+    rightColumnTitle = "ROTATING BEER";
+  }
+  
   return (
     <div className={`tv-display-new ${!isDisplay1 ? 'display-2-large' : ''}`}>
       <button onClick={toggleDarkMode} className="theme-toggle-button">
@@ -114,24 +123,16 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
         <div className="beer-column">
           <h2 className="column-title">{leftColumnTitle}</h2>
           <div className="beer-list">
-            {leftColumnBeers.map((beer, index) => (
-              <BeerItem 
-                key={beer.id} 
-                beer={beer} 
-                tapNumberToShow={!isDisplay1 ? 5 + index + 1 : undefined} 
-              />
+            {leftColumnBeers.map((beer) => (
+              <BeerItem key={beer.id} beer={beer} />
             ))}
           </div>
         </div>
         <div className="beer-column">
           <h2 className="column-title">{rightColumnTitle}</h2>
           <div className="beer-list">
-            {rightColumnBeers.map((beer, index) => (
-              <BeerItem 
-                key={beer.id} 
-                beer={beer} 
-                tapNumberToShow={isDisplay1 ? index + 1 : 9 + index + 1} 
-              />
+            {rightColumnBeers.map((beer) => (
+              <BeerItem key={beer.id} beer={beer} />
             ))}
           </div>
         </div>
