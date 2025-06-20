@@ -3,9 +3,21 @@ import prisma from '@/lib/prisma'
 
 export async function GET() {
   try {
+    // --- DIAGNOSTIC LOGGING ---
+    console.log("--- BEER API: INCOMING GET REQUEST ---");
+    if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes('railway')) {
+      console.log("DATABASE_URL looks correct (PostgreSQL on Railway).");
+    } else {
+      console.log("WARNING: DATABASE_URL is missing or incorrect. It is:", process.env.DATABASE_URL);
+    }
+    // --- END DIAGNOSTIC LOGGING ---
+
     const beers = await prisma.beer.findMany({
       orderBy: { tapNumber: 'asc' },
     })
+    
+    console.log(`Found ${beers.length} beers in the database.`);
+
     return NextResponse.json(beers)
   } catch (error) {
     console.error('Error fetching beers:', error)
