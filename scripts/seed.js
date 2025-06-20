@@ -302,21 +302,28 @@ async function main() {
   console.log('✅ All beers have been seeded successfully!')
 
   // Seed rotating messages
-  console.log('🔄 Seeding rotating messages...')
-  await prisma.rotatingMessage.deleteMany({})
+  console.log('🔄 Checking rotating messages...')
   
-  const defaultMessages = [
-    { text: 'Follow us on Instagram @TheCastle', order: 1, duration: 8, color: '#FFFFFF' },
-    { text: 'Quiz Night every Wednesday 8PM', order: 2, duration: 8, color: '#FFD700' },
-    { text: 'Happy Hour: 5-7PM weekdays', order: 3, duration: 8, color: '#FFFFFF' },
-    { text: 'Book your table online', order: 4, duration: 8, color: '#87CEEB' },
-  ]
+  // Only seed if no messages exist
+  const existingMessages = await prisma.rotatingMessage.findMany({})
   
-  for (const msg of defaultMessages) {
-    await prisma.rotatingMessage.create({ data: msg })
+  if (existingMessages.length === 0) {
+    console.log('No messages found, creating default messages...')
+    const defaultMessages = [
+      { text: 'Follow us on Instagram @TheCastle', order: 1, duration: 8, color: '#FFFFFF' },
+      { text: 'Quiz Night every Wednesday 8PM', order: 2, duration: 8, color: '#FFD700' },
+      { text: 'Happy Hour: 5-7PM weekdays', order: 3, duration: 8, color: '#FFFFFF' },
+      { text: 'Book your table online', order: 4, duration: 8, color: '#87CEEB' },
+    ]
+    
+    for (const msg of defaultMessages) {
+      await prisma.rotatingMessage.create({ data: msg })
+    }
+    
+    console.log('✅ Default rotating messages created!')
+  } else {
+    console.log(`✅ Found ${existingMessages.length} existing messages, keeping them intact`)
   }
-  
-  console.log('✅ Rotating messages seeded!')
 
   console.log('Database seeding completed!')
 }
