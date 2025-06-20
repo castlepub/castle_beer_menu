@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { BeerLogo } from '@/components/ui/beer-logo'
 import useSWR, { mutate } from 'swr'
 
 interface Beer {
@@ -200,8 +201,8 @@ export default function AdminPage() {
     if (beer.isCore) {
       // Core beers get letters based on their tap number (0-5)
       const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F']
-      const coreNames = ['Castle Brew', 'Hefeweizen', 'Pale Ale', 'Cider', 'Stout', 'Radler']
-      const index = beer.tapNumber
+      const coreNames = ['Castle Brew Pils', 'Hefeweizen', 'Pale Ale', 'Cider', 'Stout', 'Radler']
+      const index = beer.tapNumber - 1 // Subtract 1 to get 0-based index
       if (index >= 0 && index < coreLetters.length) {
         return `${coreLetters[index]} - ${coreNames[index]}`
       }
@@ -316,12 +317,12 @@ export default function AdminPage() {
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       <option value="">Select Core Beer</option>
-                      <option value="0">A - Castle Brew (Tap 0)</option>
-                      <option value="1">B - Hefeweizen (Tap 1)</option>
-                      <option value="2">C - Pale Ale (Tap 2)</option>
-                      <option value="3">D - Cider (Tap 3)</option>
-                      <option value="4">E - Stout (Tap 4)</option>
-                      <option value="5">F - Radler (Tap 5)</option>
+                      <option value="1">A - Castle Brew Pils (Tap 1)</option>
+                      <option value="2">B - Hefeweizen (Tap 2)</option>
+                      <option value="3">C - Pale Ale (Tap 3)</option>
+                      <option value="4">D - Cider (Tap 4)</option>
+                      <option value="5">E - Stout (Tap 5)</option>
+                      <option value="6">F - Radler (Tap 6)</option>
                     </select>
                   ) : (
                     <Input
@@ -406,14 +407,34 @@ export default function AdminPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="logo">Logo URL (optional)</Label>
-                <Input
+                <Label htmlFor="logo">Logo (optional)</Label>
+                <select
                   id="logo"
-                  type="url"
-                  placeholder="https://example.com/logo.png"
                   value={beerForm.logo}
                   onChange={(e) => setBeerForm({ ...beerForm, logo: e.target.value })}
-                />
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">No Logo</option>
+                  <option value="/static/logo/hopscor.png">Hopscor Brewing</option>
+                  <option value="/static/logo/weihenstephan.jpg">Weihenstephan</option>
+                  <option value="/static/logo/strassenbrau.png">Strassenbrau</option>
+                  <option value="/static/logo/Brlo.png">Brlo</option>
+                  <option value="/static/logo/castle.png">Castle</option>
+                  <option value="/static/logo/braugier.png">Braugier</option>
+                  <option value="/static/logo/fuerst wiacek.png">Fuerst Wiacek</option>
+                  <option value="/static/logo/stowford.jpg">Stowford</option>
+                  <option value="/static/logo/guinness.jpg">Guinness</option>
+                  <option value="custom">Custom URL...</option>
+                </select>
+                {beerForm.logo === 'custom' && (
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/logo.png"
+                    value={beerForm.logo === 'custom' ? '' : beerForm.logo}
+                    onChange={(e) => setBeerForm({ ...beerForm, logo: e.target.value })}
+                    className="mt-2"
+                  />
+                )}
               </div>
 
               <div className="space-y-2">
@@ -475,26 +496,33 @@ export default function AdminPage() {
                   }`}
                 >
                   <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
-                          {getBeerIdentifier(beer)}
-                        </span>
-                        {beer.status === 'keg_empty' && (
-                          <span className="text-xs bg-destructive text-destructive-foreground px-2 py-1 rounded">
-                            Empty
+                    <div className="flex items-start gap-3 flex-1">
+                      <BeerLogo 
+                        src={beer.logo} 
+                        alt={`${beer.brewery} logo`}
+                        size={40}
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm bg-primary text-primary-foreground px-2 py-1 rounded">
+                            {getBeerIdentifier(beer)}
                           </span>
-                        )}
-                        {beer.tags && JSON.parse(beer.tags).map((tag: string) => (
-                          <span key={tag} className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded">
-                            {tag}
-                          </span>
-                        ))}
+                          {beer.status === 'keg_empty' && (
+                            <span className="text-xs bg-destructive text-destructive-foreground px-2 py-1 rounded">
+                              Empty
+                            </span>
+                          )}
+                          {beer.tags && JSON.parse(beer.tags).map((tag: string) => (
+                            <span key={tag} className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <h3 className="font-semibold mt-1">{beer.name}</h3>
+                        <p className="text-sm text-muted-foreground">{beer.brewery}</p>
+                        <p className="text-sm">{beer.style} • {beer.abv}</p>
+                        <p className="text-sm font-medium text-primary">{beer.price}</p>
                       </div>
-                      <h3 className="font-semibold mt-1">{beer.name}</h3>
-                      <p className="text-sm text-muted-foreground">{beer.brewery}</p>
-                      <p className="text-sm">{beer.style} • {beer.abv}</p>
-                      <p className="text-sm font-medium text-primary">{beer.price}</p>
                     </div>
                     <div className="flex gap-2">
                       <Button

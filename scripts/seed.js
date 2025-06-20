@@ -19,6 +19,7 @@ async function main() {
       isCore: true,
       tags: JSON.stringify(["HOUSE"]),
       location: "Bar",
+      logo: "/static/logo/hopscor.png",
     },
     {
       tapNumber: 2,
@@ -30,6 +31,7 @@ async function main() {
       status: "on_tap",
       isCore: true,
       location: "Bar",
+      logo: "/static/logo/weihenstephan.jpg",
     },
     {
       tapNumber: 3,
@@ -41,6 +43,7 @@ async function main() {
       status: "on_tap",
       isCore: true,
       location: "Garden",
+      logo: "/static/logo/hopscor.png",
     },
     {
       tapNumber: 4,
@@ -75,6 +78,7 @@ async function main() {
       isCore: true,
       tags: JSON.stringify(["HOUSE"]),
       location: "Garden",
+      logo: "/static/logo/castle.png",
     },
   ]
 
@@ -100,6 +104,7 @@ async function main() {
       price: "0,3L €4.50 / 0,5L €6",
       status: "on_tap",
       location: "Garden",
+      logo: "/static/logo/weihenstephan.jpg",
     },
     {
       tapNumber: 9,
@@ -110,6 +115,7 @@ async function main() {
       price: "0,3L €4.50 / 0,5L €6",
       status: "on_tap",
       location: "Upstairs",
+      logo: "/static/logo/strassenbrau.png",
     },
     {
       tapNumber: 10,
@@ -191,7 +197,7 @@ async function main() {
       abv: "5.3% ABV",
       price: "0,5L €5",
       status: "on_tap",
-      logo: "https://via.placeholder.com/64x64/FFA500/000000?text=WEIHEN",
+      logo: "/static/logo/weihenstephan.jpg",
     },
     {
       tapNumber: 18,

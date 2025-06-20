@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import Image from 'next/image'
+import { BeerLogo } from '@/components/ui/beer-logo'
 
 interface Beer {
   id: number
@@ -139,27 +140,19 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
             {/* First row: Castle Brew, Hefeweizen, Pale Ale, Cider */}
             <div className="grid mb-4">
               {coreBeers.filter(beer => 
-                beer.name.toLowerCase().includes('castle brew') ||
-                beer.name.toLowerCase().includes('hefeweizen') ||
-                beer.name.toLowerCase().includes('pale ale') ||
-                beer.name.toLowerCase().includes('cider')
+                beer.tapNumber === 1 || // Castle Brew Pils
+                beer.tapNumber === 2 || // Hefeweizen
+                beer.tapNumber === 3 || // Pale Ale
+                beer.tapNumber === 4    // Cider
               ).map((beer) => (
                 <div key={beer.id} className={`beer-card ${beer.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                   <div className="beer-card-header">
                     <div className="beer-logo">
-                      {beer.logo ? (
-                        <Image
-                          src={beer.logo}
-                          alt={`${beer.brewery} logo`}
-                          width={44}
-                          height={44}
-                          className="rounded-lg bg-white/10 p-1"
-                        />
-                      ) : (
-                        <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                          🍺
-                        </div>
-                      )}
+                      <BeerLogo 
+                        src={beer.logo} 
+                        alt={`${beer.brewery} logo`}
+                        size={44}
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className={`beer-name ${beer.status === 'keg_empty' ? 'line-through' : ''}`}>
@@ -199,24 +192,16 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
             <div className="flex justify-between items-stretch gap-4">
               {/* Stout - Left */}
               {(() => {
-                const stout = coreBeers.find(beer => beer.name.toLowerCase().includes('stout'))
+                const stout = coreBeers.find(beer => beer.tapNumber === 5)
                 return stout && (
                   <div className={`beer-card flex-1 max-w-xs ${stout.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                     <div className="beer-card-header">
                       <div className="beer-logo">
-                        {stout.logo ? (
-                          <Image
-                            src={stout.logo}
-                            alt={`${stout.brewery} logo`}
-                            width={44}
-                            height={44}
-                            className="rounded-lg bg-white/10 p-1"
-                          />
-                        ) : (
-                          <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                            🍺
-                          </div>
-                        )}
+                        <BeerLogo 
+                          src={stout.logo} 
+                          alt={`${stout.brewery} logo`}
+                          size={44}
+                        />
                       </div>
                       <div className="flex-1">
                         <h3 className={`beer-name ${stout.status === 'keg_empty' ? 'line-through' : ''}`}>
@@ -266,24 +251,16 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
               
               {/* Radler - Right */}
               {(() => {
-                const radler = coreBeers.find(beer => beer.name.toLowerCase().includes('radler'))
+                const radler = coreBeers.find(beer => beer.tapNumber === 6)
                 return radler && (
                   <div className={`beer-card flex-1 max-w-xs ${radler.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                     <div className="beer-card-header">
                       <div className="beer-logo">
-                        {radler.logo ? (
-                          <Image
-                            src={radler.logo}
-                            alt={`${radler.brewery} logo`}
-                            width={44}
-                            height={44}
-                            className="rounded-lg bg-white/10 p-1"
-                          />
-                        ) : (
-                          <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                            🍺
-                          </div>
-                        )}
+                        <BeerLogo 
+                          src={radler.logo} 
+                          alt={`${radler.brewery} logo`}
+                          size={44}
+                        />
                       </div>
                       <div className="flex-1">
                         <h3 className={`beer-name ${radler.status === 'keg_empty' ? 'line-through' : ''}`}>
@@ -331,19 +308,11 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
                 <div key={beer.id} className={`beer-card ${beer.status === 'keg_empty' ? 'opacity-60' : ''}`}>
                   <div className="beer-card-header">
                     <div className="beer-logo">
-                      {beer.logo ? (
-                        <Image
-                          src={beer.logo}
-                          alt={`${beer.brewery} logo`}
-                          width={44}
-                          height={44}
-                          className="rounded-lg bg-white/10 p-1"
-                        />
-                      ) : (
-                        <div className="bg-primary/20 rounded-lg flex items-center justify-center text-2xl">
-                          🍺
-                        </div>
-                      )}
+                      <BeerLogo 
+                        src={beer.logo} 
+                        alt={`${beer.brewery} logo`}
+                        size={44}
+                      />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
