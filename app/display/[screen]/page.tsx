@@ -61,7 +61,11 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const { data: beers, error } = useSWR<Beer[]>('/api/beers', fetcher, { refreshInterval: 5000 });
   const screenNumber = parseInt(params.screen, 10);
 
-
+  const { data: customMessage } = useSWR(
+    screenNumber === 2 ? '/api/custom-message?key=display2_message' : null,
+    fetcher,
+    { refreshInterval: 10000 }
+  );
   
   const [isDark, setIsDark] = useState(false);
 
@@ -138,6 +142,11 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
       </main>
 
       <footer className="display-footer">
+        {screenNumber === 2 && customMessage?.content && (
+          <div className="custom-message-display2">
+            <p>{customMessage.content}</p>
+          </div>
+        )}
       </footer>
     </div>
   );

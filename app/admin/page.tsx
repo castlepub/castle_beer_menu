@@ -44,9 +44,16 @@ export default function AdminPage() {
     isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
+  const [messageForm, setMessageForm] = useState('')
 
   const { data: beers, error } = useSWR<Beer[]>(
     isLoggedIn ? '/api/beers' : null,
+    fetcher,
+    { refreshInterval: 30000 }
+  )
+
+  const { data: customMessage } = useSWR<{id: number, key: string, content: string}>(
+    isLoggedIn ? '/api/custom-message?key=display2_message' : null,
     fetcher,
     { refreshInterval: 30000 }
   )
@@ -55,6 +62,12 @@ export default function AdminPage() {
     // Check if already logged in (cookie-based)
     checkAuth()
   }, [])
+
+  useEffect(() => {
+    if (customMessage?.content) {
+      setMessageForm(customMessage.content)
+    }
+  }, [customMessage])
 
   const checkAuth = async () => {
     try {
@@ -195,6 +208,29 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Status update error:', error)
       alert('Failed to update beer status')
+    }
+  }
+
+  const handleMessageSave = async () => {
+    try {
+      const response = await fetch('/api/custom-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: 'display2_message',
+          content: messageForm
+        })
+      })
+
+      if (response.ok) {
+        mutate('/api/custom-message?key=display2_message')
+        alert('Message updated successfully!')
+      } else {
+        alert('Failed to update message')
+      }
+    } catch (error) {
+      console.error('Message update error:', error)
+      alert('Failed to update message')
     }
   }
 
@@ -589,6 +625,27 @@ export default function AdminPage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Custom Message Editor */}
+        <div className="mt-8 space-y-6">
+          <h2 className="text-xl font-semibold">Display 2 Custom Message</h2>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="customMessage">Message (appears at bottom of Display 2)</Label>
+              <textarea
+                id="customMessage"
+                value={messageForm}
+                onChange={(e) => setMessageForm(e.target.value)}
+                placeholder="Enter your custom message for Display 2..."
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground"
+                rows={3}
+              />
+            </div>
+            <Button onClick={handleMessageSave}>
+              Update Display 2 Message
+            </Button>
           </div>
         </div>
       </div>

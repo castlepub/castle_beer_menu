@@ -34,4 +34,10 @@ model User {
   password String // bcrypt hashed
   
   @@map("users")
+}
+
+model CustomMessage {
+  id      Int    @id @default(autoincrement())
+  key     String @unique
+  content String
 } 
