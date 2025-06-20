@@ -26,6 +26,8 @@ model Beer {
   location    String?
   startDate   DateTime @default(now())
   endDate     DateTime?
+  
+  @@map("beers")
 }
 
 model User {
