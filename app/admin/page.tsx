@@ -258,8 +258,16 @@ export default function AdminPage() {
     }
   }
 
+  if (error) {
+    return (
+      <div className="p-6 text-center text-destructive">
+        Error loading beers: {error.message}. Please check the API server.
+      </div>
+    )
+  }
+  
   // Sort beers for display: core first, then rotating by tap number
-  const sortedBeers = beers ? [...beers].sort((a, b) => {
+  const sortedBeers = Array.isArray(beers) ? [...beers].sort((a, b) => {
     if (a.isCore && !b.isCore) return -1;
     if (!a.isCore && b.isCore) return 1;
     return a.tapNumber - b.tapNumber;
@@ -546,10 +554,6 @@ export default function AdminPage() {
           {/* Beer List */}
           <div className="space-y-6">
             <h2 className="text-xl font-semibold">Current Beers on Tap</h2>
-            
-            {error && (
-              <div className="text-destructive">Error loading beers: {error.message}</div>
-            )}
             
             <div className="space-y-3 max-h-[600px] overflow-y-auto pr-4">
               {sortedBeers.map((beer) => (
