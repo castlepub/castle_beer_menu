@@ -31,7 +31,7 @@ interface RotatingMessage {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-const BeerItem = ({ beer }: { beer: Beer }) => {
+const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number }) => {
   const isNew = beer.tags && JSON.parse(beer.tags).includes('new');
   const isEmpty = beer.status === 'keg_empty';
 
@@ -43,7 +43,7 @@ const BeerItem = ({ beer }: { beer: Beer }) => {
       <div className="beer-item-info">
         <p className={`beer-item-header ${isEmpty ? 'line-through' : ''}`}>
           <strong>
-            {!beer.isCore && `${beer.tapNumber}. `}
+            {!beer.isCore && rotatingIndex !== undefined && `${rotatingIndex}. `}
             {beer.name.toUpperCase()}
           </strong>
           {' - '}
@@ -143,9 +143,15 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const currentMessage = !isDisplay1 && messages && messages.length > 0 
     ? messages[currentMessageIndex] 
     : null;
+
+  // Calculate rotating beer index for proper numbering
+  const getRotatingIndex = (beer: Beer, index: number) => {
+    if (beer.isCore) return undefined; // Core beers have no numbers
+    return index + 1; // All rotating beers start from 1 within each display
+  };
   
   return (
-    <div className={`tv-display-new ${!isDisplay1 ? 'display-2-large' : ''}`}>
+    <div className={`tv-display-new ${isDark ? 'dark' : 'light'}`}>
       <button onClick={toggleDarkMode} className="theme-toggle-button">
         {isDark ? <Sun size={24} /> : <Moon size={24} />}
       </button>
@@ -161,16 +167,16 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
         <div className="beer-column">
           <h2 className="column-title">{leftColumnTitle}</h2>
           <div className="beer-list">
-            {leftColumnBeers.map((beer) => (
-              <BeerItem key={beer.id} beer={beer} />
+            {leftColumnBeers.map((beer, index) => (
+              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index)} />
             ))}
           </div>
         </div>
         <div className="beer-column">
           <h2 className="column-title">{rightColumnTitle}</h2>
           <div className="beer-list">
-            {rightColumnBeers.map((beer) => (
-              <BeerItem key={beer.id} beer={beer} />
+            {rightColumnBeers.map((beer, index) => (
+              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index + leftColumnBeers.length)} />
             ))}
           </div>
         </div>

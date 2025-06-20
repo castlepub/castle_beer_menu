@@ -88,12 +88,16 @@ async function main() {
 
   console.log('Upserting core beers...')
   for (const beer of coreBeers) {
-    await prisma.beer.upsert({
-      where: { tapNumber: beer.tapNumber },
-      update: beer,
-      create: beer,
+    const existingBeer = await prisma.beer.findFirst({
+      where: { tapNumber: beer.tapNumber }
     })
-    console.log(`- ${beer.name}`)
+    
+    if (!existingBeer) {
+      await prisma.beer.create({ data: beer })
+      console.log(`- Created Tap ${beer.tapNumber}: ${beer.name}`)
+    } else {
+      console.log(`- Tap ${beer.tapNumber}: ${beer.name} already exists, keeping current version`)
+    }
   }
 
   // Sample rotating beers to restore the menu
@@ -279,12 +283,16 @@ async function main() {
 
   console.log('Upserting rotating beers...')
   for (const beer of rotatingBeers) {
-    await prisma.beer.upsert({
-      where: { tapNumber: beer.tapNumber },
-      update: beer,
-      create: beer,
+    const existingBeer = await prisma.beer.findFirst({
+      where: { tapNumber: beer.tapNumber }
     })
-    console.log(`- Tap ${beer.tapNumber}: ${beer.name}`)
+    
+    if (!existingBeer) {
+      await prisma.beer.create({ data: beer })
+      console.log(`- Created Tap ${beer.tapNumber}: ${beer.name}`)
+    } else {
+      console.log(`- Tap ${beer.tapNumber}: ${beer.name} already exists, keeping current version`)
+    }
   }
 
   // Create default custom message
