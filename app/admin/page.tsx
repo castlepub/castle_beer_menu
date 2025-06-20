@@ -228,15 +228,14 @@ export default function AdminPage() {
   const getBeerIdentifier = (beer: Beer) => {
     if (beer.isCore) {
       const coreLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
-      const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
-      const index = coreBeers.findIndex(b => b.id === beer.id);
+      const index = beer.tapNumber - 1;
       if (index >= 0 && index < coreLetters.length) {
         return coreLetters[index];
       }
       return 'CORE';
     } else {
-      // Rotating beers get numbers 1, 2, 3... based on their position among rotating beers
-      const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a,b) => a.tapNumber - b.tapNumber) : [];
+      // Rotating beers get numbers, but we need to find their position among rotating beers
+      const rotatingBeers = beers?.filter(b => !b.isCore).sort((a,b) => a.tapNumber - b.tapNumber) || [];
       const rotatingIndex = rotatingBeers.findIndex(b => b.id === beer.id);
       return (rotatingIndex + 1).toString();
     }
