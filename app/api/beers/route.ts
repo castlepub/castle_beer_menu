@@ -1,41 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 
 export async function GET() {
   try {
-    // Set DATABASE_URL if not present (for development)
-    if (!process.env.DATABASE_URL) {
-      process.env.DATABASE_URL = 'file:./dev.db'
-      console.log('API: Setting DATABASE_URL fallback:', process.env.DATABASE_URL)
-    }
-    
-    // Log the environment variable for debugging
-    console.log('API: process.env.DATABASE_URL:', process.env.DATABASE_URL)
-    
     const beers = await prisma.beer.findMany({
       orderBy: { tapNumber: 'asc' },
     })
     return NextResponse.json(beers)
   } catch (error) {
-    console.error('Error fetching beers (API):', error)
-    
-    // Check if it's a Prisma initialization error
-    if (error instanceof Error && error.message.includes('DATABASE_URL')) {
-      return NextResponse.json({ 
-        error: 'Database configuration error. Please check environment variables.' 
-      }, { status: 500 })
-    }
-    
+    console.error('Error fetching beers:', error)
     return NextResponse.json({ error: 'Failed to fetch beers' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 })
-    }
-
     const body = await request.json()
     const { tapNumber, name, brewery, abv, style, price, logo, status, tags, isCore, startDate, endDate } = body
 
@@ -65,10 +44,6 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 })
-    }
-
     const body = await request.json()
     const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags, isCore, startDate, endDate } = body
 
@@ -99,10 +74,6 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ error: 'Database configuration error' }, { status: 500 })
-    }
-
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 

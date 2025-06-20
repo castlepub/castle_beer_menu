@@ -1,15 +1,15 @@
 import { PrismaClient } from '@prisma/client'
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+const prismaClientSingleton = () => {
+  return new PrismaClient()
 }
 
-// Set DATABASE_URL if not present (for development)
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./dev.db'
-  console.log('Setting DATABASE_URL fallback for development:', process.env.DATABASE_URL)
+declare global {
+  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+const prisma = global.prisma ?? prismaClientSingleton()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma

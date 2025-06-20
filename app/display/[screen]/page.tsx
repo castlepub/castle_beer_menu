@@ -82,12 +82,16 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     localStorage.setItem('theme', newTheme);
   };
 
-  if (error || !beers) {
+  if (error) {
+    return <div className="loading-screen">Error loading beer menu. Please try again later.</div>;
+  }
+  
+  if (!beers) {
     return <div className="loading-screen">Loading...</div>;
   }
 
-  const coreBeers = beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber);
-  const rotatingBeers = beers.filter(b => !b.isCore).sort((a, b) => a.tapNumber - b.tapNumber);
+  const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
+  const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
 
   const isDisplay1 = screenNumber === 1;
 
