@@ -21,6 +21,7 @@ async function main() {
       tags: JSON.stringify(['HOUSE']),
       location: 'Bar',
       logo: '/logo/hopscor.png',
+      isCore: true,
     },
     {
       tapNumber: 2,
@@ -32,6 +33,7 @@ async function main() {
       status: 'on_tap',
       location: 'Bar',
       logo: '/logo/weihenstephan.jpg',
+      isCore: true,
     },
     {
       tapNumber: 3,
@@ -43,6 +45,7 @@ async function main() {
       status: 'on_tap',
       location: 'Garden',
       logo: '/logo/hopscor.png',
+      isCore: true,
     },
     {
       tapNumber: 4,
@@ -53,7 +56,8 @@ async function main() {
       price: '0,3L €5.50 / 0,5L €7',
       status: 'on_tap',
       location: 'Bar',
-      logo: '/logo/stowford.jpg'
+      logo: '/logo/stowford.jpg',
+      isCore: true,
     },
     {
       tapNumber: 5,
@@ -64,7 +68,8 @@ async function main() {
       price: '0,3L €5.50 / 0,5L €7',
       status: 'on_tap',
       location: 'Upstairs',
-      logo: '/logo/guinness.jpg'
+      logo: '/logo/guinness.jpg',
+      isCore: true,
     },
     {
       tapNumber: 6,
@@ -77,6 +82,7 @@ async function main() {
       tags: JSON.stringify(['HOUSE']),
       location: 'Garden',
       logo: '/logo/castle.png',
+      isCore: true,
     },
   ]
 
@@ -102,6 +108,7 @@ async function main() {
       status: 'on_tap',
       location: 'Garden',
       logo: '/logo/Brlo.png',
+      isCore: false,
     },
     {
       tapNumber: 8,
@@ -114,6 +121,7 @@ async function main() {
       tags: JSON.stringify(['NEW']),
       location: 'Bar',
       logo: '/logo/strassenbrau.png',
+      isCore: false,
     },
     {
       tapNumber: 9,
@@ -126,6 +134,7 @@ async function main() {
       tags: JSON.stringify(['STRONG']),
       location: 'Upstairs',
       logo: '/logo/fuerst wiacek.png',
+      isCore: false,
     },
     {
       tapNumber: 10,
@@ -138,6 +147,7 @@ async function main() {
       tags: JSON.stringify(['SEASONAL', 'LIMITED']),
       location: 'Garden',
       logo: '/logo/braugier.png',
+      isCore: false,
     },
     {
       tapNumber: 11,
@@ -150,6 +160,7 @@ async function main() {
       tags: JSON.stringify(['HOUSE', 'STRONG']),
       location: 'Bar',
       logo: '/logo/castle.png',
+      isCore: false,
     },
     {
       tapNumber: 12,
@@ -161,6 +172,7 @@ async function main() {
       status: 'on_tap',
       location: 'Upstairs',
       logo: '/logo/weihenstephan.jpg',
+      isCore: false,
     },
     {
       tapNumber: 13,
@@ -172,6 +184,7 @@ async function main() {
       status: 'keg_empty',
       location: 'Garden',
       logo: '/logo/hopscor.png',
+      isCore: false,
     },
     {
       tapNumber: 14,
@@ -184,6 +197,7 @@ async function main() {
       tags: JSON.stringify(['NEW', 'LIMITED']),
       location: 'Bar',
       logo: '/logo/Brlo.png',
+      isCore: false,
     }
   ]
 
