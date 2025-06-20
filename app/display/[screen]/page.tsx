@@ -98,7 +98,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const rightColumnTitle = "ROTATING BEER";
 
   return (
-    <div className="tv-display-new">
+    <div className={`tv-display-new ${!isDisplay1 ? 'display-2-large' : ''}`}>
       <button onClick={toggleDarkMode} className="theme-toggle-button">
         {isDark ? <Sun size={24} /> : <Moon size={24} />}
       </button>

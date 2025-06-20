@@ -5,6 +5,10 @@ const prisma = new PrismaClient()
 async function main() {
   console.log(`Start seeding ...`)
 
+  // Delete all existing beers to ensure a clean slate
+  await prisma.beer.deleteMany({})
+  console.log('Deleted all existing beers.')
+
   const coreBeers = [
     {
       tapNumber: 1,
