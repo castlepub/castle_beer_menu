@@ -195,14 +195,14 @@ async function main() {
 
   // Create default custom message
   console.log('Creating default custom message...')
-  await prisma.customMessage.upsert({
-    where: { key: 'display2_message' },
-    update: {},
-    create: {
-      key: 'display2_message',
-      content: 'Welcome to The Castle - Enjoy our rotating selection of craft beers!'
-    }
-  })
+  // await prisma.customMessage.upsert({
+  //   where: { key: 'display2_message' },
+  //   update: {},
+  //   create: {
+  //     key: 'display2_message',
+  //     content: 'Welcome to The Castle - Enjoy our rotating selection of craft beers!'
+  //   }
+  // })
   console.log('- Default message created')
 
   console.log(`Seeding finished.`)

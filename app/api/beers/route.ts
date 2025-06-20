@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { tapNumber, name, brewery, abv, style, price, logo, status, tags, location } = body
+    const { tapNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.create({
       data: {
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         status: status || 'on_tap',
         tags: tags ? JSON.stringify(tags) : null,
         location: location || null,
+        isCore: isCore || false,
       },
     })
 
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags, location } = body
+    const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.update({
       where: { id: parseInt(id) },
@@ -58,6 +59,7 @@ export async function PUT(request: NextRequest) {
         status,
         tags: tags ? JSON.stringify(tags) : null,
         location: location || null,
+        isCore: isCore || false,
       },
     })
 

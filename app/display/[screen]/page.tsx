@@ -45,7 +45,7 @@ const BeerItem = ({ beer, tapNumberToShow }: { beer: Beer, tapNumberToShow?: num
           <p className="beer-item-sub font-semibold">keg is empty new one coming soon</p>
         ) : (
           <p className="beer-item-sub">
-            {beer.style} {beer.abv} - {beer.location}
+            {beer.style} {beer.abv}
           </p>
         )}
       </div>

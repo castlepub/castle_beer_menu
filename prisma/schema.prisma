@@ -23,6 +23,7 @@ model Beer {
   status      String   @default("on_tap")
   tags        String?
   location    String?
+  isCore      Boolean  @default(false)
   
   @@map("beers")
 }
