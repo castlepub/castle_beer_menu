@@ -12,24 +12,20 @@ datasource db {
 }
 
 model Beer {
-  id         Int      @id @default(autoincrement())
-  tapNumber  Int      @unique @map("tap_number")
-  name       String
-  brewery    String
-  abv        String
-  style      String
-  price      String
-  logo       String?
-  status     String   @default("on_tap") // "on_tap" or "keg_empty"
-  tags       String?  // JSON string for tags like ["NEW", "LIMITED"]
-  location   String?  // Location of the beer (e.g., "Bar", "Garden", "Upstairs")
-  startDate  DateTime @default(now()) @map("start_date")
-  endDate    DateTime? @map("end_date")
-  isCore     Boolean  @default(false)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-
-  @@map("beers")
+  id          Int      @id @default(autoincrement())
+  tapNumber   Int      @unique
+  name        String
+  brewery     String
+  abv         String
+  style       String
+  price       String
+  logo        String?
+  status      String   @default("on_tap")
+  tags        String?
+  isCore      Boolean  @default(false)
+  location    String?
+  startDate   DateTime @default(now())
+  endDate     DateTime?
 }
 
 model User {
@@ -38,14 +34,4 @@ model User {
   password String // bcrypt hashed
   
   @@map("users")
-}
-
-model DisplayMessage {
-  id        Int      @id @default(autoincrement())
-  screen    Int      @unique
-  content   String   // The custom text (can be HTML/Markdown)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("display_messages")
 } 

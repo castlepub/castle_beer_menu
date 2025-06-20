@@ -44,10 +44,6 @@ export default function AdminPage() {
     isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
-  const [displayMessageForm, setDisplayMessageForm] = useState({
-    screen: 1,
-    content: ''
-  })
 
   const { data: beers, error } = useSWR<Beer[]>(
     isLoggedIn ? '/api/beers' : null,
@@ -55,28 +51,10 @@ export default function AdminPage() {
     { refreshInterval: 30000 }
   )
 
-  const { data: displayMessage, mutate: mutateDisplayMessage } = useSWR(
-    isLoggedIn ? `/api/display-messages?screen=${displayMessageForm.screen}` : null,
-    fetcher
-  )
-
   useEffect(() => {
     // Check if already logged in (cookie-based)
     checkAuth()
   }, [])
-
-  useEffect(() => {
-    // Update form when display message data loads for the selected screen
-    if (displayMessage) {
-      setDisplayMessageForm(prev => ({
-        ...prev,
-        content: displayMessage.content || ''
-      }))
-    } else {
-      // Clear content when switching to a screen with no message
-      setDisplayMessageForm(prev => ({ ...prev, content: '' }));
-    }
-  }, [displayMessage])
 
   const checkAuth = async () => {
     try {
@@ -235,28 +213,6 @@ export default function AdminPage() {
       return (rotatingIndex + 1).toString();
     }
   };
-
-  const handleDisplayMessageSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const response = await fetch('/api/display-messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(displayMessageForm)
-      })
-
-      if (response.ok) {
-        alert('Display message saved successfully!')
-        mutateDisplayMessage()
-      } else {
-        const error = await response.json()
-        alert(error.error || 'Failed to save display message')
-      }
-    } catch (error) {
-      console.error('Save display message error:', error)
-      alert('Failed to save display message')
-    }
-  }
 
   if (error) {
     return (
@@ -634,67 +590,6 @@ export default function AdminPage() {
               )}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Display Message Editor */}
-      <div className="p-6 max-w-4xl mx-auto mt-8">
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Display Message Editor</h2>
-          
-          <form onSubmit={handleDisplayMessageSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="screen">Display Screen</Label>
-              <select
-                id="screen"
-                value={displayMessageForm.screen}
-                onChange={(e) => {
-                  const screen = parseInt(e.target.value);
-                  setDisplayMessageForm({ ...displayMessageForm, screen });
-                  // We don't need to manually clear here, the `useEffect` will handle it.
-                }}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value={1}>Display 1</option>
-                <option value={2}>Display 2</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="content">Message Content</Label>
-              <textarea
-                id="content"
-                value={displayMessageForm.content}
-                onChange={(e) => setDisplayMessageForm({ 
-                  ...displayMessageForm, 
-                  content: e.target.value 
-                })}
-                rows={8}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
-                placeholder="Enter your message here... You can use basic HTML tags like &lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, etc."
-              />
-              <p className="text-xs text-muted-foreground">
-                Supports basic HTML: &lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;h3&gt;, &lt;p&gt;, etc.
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Button type="submit">
-                Save Message
-              </Button>
-            </div>
-          </form>
-
-          {/* Preview */}
-          {displayMessageForm.content && (
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Preview:</h3>
-              <div 
-                className="p-4 border rounded-lg bg-card"
-                dangerouslySetInnerHTML={{ __html: displayMessageForm.content }}
-              />
-            </div>
-          )}
         </div>
       </div>
     </div>

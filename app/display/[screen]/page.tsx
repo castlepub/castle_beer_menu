@@ -61,11 +61,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const { data: beers, error } = useSWR<Beer[]>('/api/beers', fetcher, { refreshInterval: 5000 });
   const screenNumber = parseInt(params.screen, 10);
 
-  const { data: displayMessage } = useSWR(
-    `/api/display-messages?screen=${screenNumber}`, 
-    fetcher,
-    { refreshInterval: 5000 }
-  );
+
   
   const [isDark, setIsDark] = useState(false);
 
@@ -142,9 +138,6 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
       </main>
 
       <footer className="display-footer">
-        {displayMessage?.content && (
-          <div dangerouslySetInnerHTML={{ __html: displayMessage.content }} />
-        )}
       </footer>
     </div>
   );
