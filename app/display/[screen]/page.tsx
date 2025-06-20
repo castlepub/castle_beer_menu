@@ -145,9 +145,21 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     : null;
 
   // Calculate rotating beer index for proper numbering
-  const getRotatingIndex = (beer: Beer, index: number) => {
+  const getRotatingIndex = (beer: Beer, index: number, isRightColumn: boolean) => {
     if (beer.isCore) return undefined; // Core beers have no numbers
-    return index + 1; // All rotating beers start from 1 within each display
+    
+    if (isDisplay1) {
+      // Display 1: rotating beers are numbered 1, 2, 3, 4...
+      return index + 1;
+    } else {
+      // Display 2: rotating beers continue from 6 onwards
+      // First 5 rotating beers are on Display 1 (1-5), so Display 2 starts from 6
+      let baseIndex = 5; // Start from 6 (5 + 1)
+      if (isRightColumn) {
+        baseIndex += leftColumnBeers.length; // Add left column count for right column
+      }
+      return baseIndex + index + 1;
+    }
   };
   
   return (
@@ -168,7 +180,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
           <h2 className="column-title">{leftColumnTitle}</h2>
           <div className="beer-list">
             {leftColumnBeers.map((beer, index) => (
-              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index)} />
+              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index, false)} />
             ))}
           </div>
         </div>
@@ -176,7 +188,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
           <h2 className="column-title">{rightColumnTitle}</h2>
           <div className="beer-list">
             {rightColumnBeers.map((beer, index) => (
-              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index + leftColumnBeers.length)} />
+              <BeerItem key={beer.id} beer={beer} rotatingIndex={getRotatingIndex(beer, index, true)} />
             ))}
           </div>
         </div>
