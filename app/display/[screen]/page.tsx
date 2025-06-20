@@ -93,19 +93,17 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   let leftColumnTitle, rightColumnTitle;
 
   if (isDisplay1) {
-    const midPoint = Math.ceil(rotatingBeers.length / 2);
     leftColumnBeers = coreBeers;
-    rightColumnBeers = rotatingBeers.slice(0, midPoint); // First half of rotating
+    rightColumnBeers = rotatingBeers.slice(0, 5); // Display first 5 rotating beers
     leftColumnTitle = "CORE RANGE BEER";
     rightColumnTitle = "ROTATING BEER";
   } else {
     // Display 2
-    const midPoint = Math.ceil(rotatingBeers.length / 2);
-    const display2Beers = rotatingBeers.slice(midPoint); // Second half of rotating
-    const display2MidPoint = Math.ceil(display2Beers.length / 2);
+    const display2Beers = rotatingBeers.slice(5); // Display beers from tap 12 onwards
+    const midPoint = Math.ceil(display2Beers.length / 2);
     
-    leftColumnBeers = display2Beers.slice(0, display2MidPoint);
-    rightColumnBeers = display2Beers.slice(display2MidPoint);
+    leftColumnBeers = display2Beers.slice(0, midPoint);
+    rightColumnBeers = display2Beers.slice(midPoint);
     leftColumnTitle = "ROTATING BEER";
     rightColumnTitle = "ROTATING BEER";
   }
