@@ -93,15 +93,19 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   let leftColumnTitle, rightColumnTitle;
 
   if (isDisplay1) {
+    const midPoint = Math.ceil(rotatingBeers.length / 2);
     leftColumnBeers = coreBeers;
-    rightColumnBeers = rotatingBeers.slice(0, 5);
+    rightColumnBeers = rotatingBeers.slice(0, midPoint); // First half of rotating
     leftColumnTitle = "CORE RANGE BEER";
     rightColumnTitle = "ROTATING BEER";
   } else {
-    const remainingRotating = rotatingBeers.slice(5);
-    const midPoint = Math.ceil(remainingRotating.length / 2);
-    leftColumnBeers = remainingRotating.slice(0, midPoint);
-    rightColumnBeers = remainingRotating.slice(midPoint);
+    // Display 2
+    const midPoint = Math.ceil(rotatingBeers.length / 2);
+    const display2Beers = rotatingBeers.slice(midPoint); // Second half of rotating
+    const display2MidPoint = Math.ceil(display2Beers.length / 2);
+    
+    leftColumnBeers = display2Beers.slice(0, display2MidPoint);
+    rightColumnBeers = display2Beers.slice(display2MidPoint);
     leftColumnTitle = "ROTATING BEER";
     rightColumnTitle = "ROTATING BEER";
   }
