@@ -13,7 +13,7 @@ datasource db {
 
 model Beer {
   id          Int      @id @default(autoincrement())
-  tapNumber   Int      @unique
+  tapNumber   Int      @unique @map("tap_number")
   name        String
   brewery     String
   abv         String
@@ -22,10 +22,10 @@ model Beer {
   logo        String?
   status      String   @default("on_tap")
   tags        String?
-  isCore      Boolean  @default(false)
+  isCore      Boolean  @default(false) @map("is_core")
   location    String?
-  startDate   DateTime @default(now())
-  endDate     DateTime?
+  startDate   DateTime @default(now()) @map("start_date")
+  endDate     DateTime? @map("end_date")
   
   @@map("beers")
 }
