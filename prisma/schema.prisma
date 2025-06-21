@@ -12,18 +12,19 @@ datasource db {
 }
 
 model Beer {
-  id          Int      @id @default(autoincrement())
-  tapNumber   Int      @unique @map("tap_number")
-  name        String
-  brewery     String
-  abv         String
-  style       String
-  price       String
-  logo        String?
-  status      String   @default("on_tap")
-  tags        String?
-  location    String?
-  isCore      Boolean  @default(false)
+  id            Int      @id @default(autoincrement())
+  tapNumber     Int      @unique @map("tap_number")
+  displayNumber Int?     @map("display_number") // For manual display ordering of rotating beers
+  name          String
+  brewery       String
+  abv           String
+  style         String
+  price         String
+  logo          String?
+  status        String   @default("on_tap")
+  tags          String?
+  location      String?
+  isCore        Boolean  @default(false)
   
   @@map("beers")
 }

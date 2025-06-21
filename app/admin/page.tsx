@@ -12,6 +12,7 @@ import Image from 'next/image'
 interface Beer {
   id: number
   tapNumber: number
+  displayNumber?: number
   name: string
   brewery: string
   abv: string
@@ -42,6 +43,7 @@ export default function AdminPage() {
   const [beerForm, setBeerForm] = useState({
     id: '',
     tapNumber: '',
+    displayNumber: '',
     name: '',
     brewery: '',
     abv: '',
@@ -142,6 +144,7 @@ export default function AdminPage() {
         setBeerForm({
           id: '',
           tapNumber: '',
+          displayNumber: '',
           name: '',
           brewery: '',
           abv: '',
@@ -168,6 +171,7 @@ export default function AdminPage() {
     setBeerForm({
       id: beer.id.toString(),
       tapNumber: beer.tapNumber.toString(),
+      displayNumber: beer.displayNumber?.toString() || '',
       name: beer.name,
       brewery: beer.brewery,
       abv: beer.abv,
@@ -455,6 +459,15 @@ export default function AdminPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label htmlFor="displayNumber">Display Number</Label>
+                  <Input
+                    id="displayNumber"
+                    value={beerForm.displayNumber}
+                    onChange={(e) => setBeerForm({ ...beerForm, displayNumber: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
                   <select
                     id="status"
@@ -578,6 +591,7 @@ export default function AdminPage() {
                       setBeerForm({
                         id: '',
                         tapNumber: '',
+                        displayNumber: '',
                         name: '',
                         brewery: '',
                         abv: '',

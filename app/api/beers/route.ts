@@ -16,11 +16,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { tapNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
+    const { tapNumber, displayNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.create({
       data: {
         tapNumber: parseInt(tapNumber),
+        displayNumber: displayNumber ? parseInt(displayNumber) : null,
         name,
         brewery,
         abv,
@@ -44,12 +45,13 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, tapNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
+    const { id, tapNumber, displayNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.update({
       where: { id: parseInt(id) },
       data: {
         tapNumber: parseInt(tapNumber),
+        displayNumber: displayNumber ? parseInt(displayNumber) : null,
         name,
         brewery,
         abv,

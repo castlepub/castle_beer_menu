@@ -9,6 +9,7 @@ import { Sun, Moon } from 'lucide-react'
 interface Beer {
   id: number;
   tapNumber: number;
+  displayNumber?: number;
   name: string;
   brewery: string;
   style: string;
@@ -118,7 +119,7 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   }
 
   const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
-  const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
+  const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a, b) => (a.displayNumber || 999) - (b.displayNumber || 999)) : [];
 
   let leftColumnBeers, rightColumnBeers;
   let leftColumnTitle, rightColumnTitle;
@@ -148,17 +149,8 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const getRotatingIndex = (beer: Beer, index: number, isRightColumn: boolean) => {
     if (beer.isCore) return undefined; // Core beers have no numbers (A, B, C, D, E, F)
     
-    if (isDisplay1) {
-      // Display 1: rotating beers are numbered 1, 2, 3, 4, 5
-      return index + 1;
-    } else {
-      // Display 2: rotating beers continue from 6 onwards
-      let baseIndex = 5; // Start from 6 (5 + 1)
-      if (isRightColumn) {
-        baseIndex += leftColumnBeers.length; // Add left column count for right column
-      }
-      return baseIndex + index + 1;
-    }
+    // For rotating beers, use the displayNumber if set, otherwise use the index
+    return beer.displayNumber || (index + 1);
   };
   
   return (
