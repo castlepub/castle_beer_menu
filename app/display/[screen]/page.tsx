@@ -33,14 +33,15 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number }) => {
   const isNew = beer.tags && JSON.parse(beer.tags).includes('new');
+  const isEmpty = beer.status === 'keg_empty';
 
   return (
-    <div className="beer-item">
+    <div className={`beer-item ${isEmpty ? 'keg-empty' : ''}`}>
       <div className="beer-item-logo">
         {beer.logo && <BeerLogo src={beer.logo} alt={beer.name} size={80} />}
       </div>
       <div className="beer-item-info">
-        <p className="beer-item-header">
+        <p className={`beer-item-header ${isEmpty ? 'line-through' : ''}`}>
           <strong>
             {!beer.isCore && rotatingIndex !== undefined && `${rotatingIndex}. `}
             {beer.name.toUpperCase()}
@@ -48,13 +49,17 @@ const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number 
           {' - '}
           {beer.brewery.toUpperCase()}
         </p>
-        <p className="beer-item-sub">
-          {beer.style} {beer.abv}
-        </p>
+        {isEmpty ? (
+          <p className="beer-item-sub font-semibold">keg is empty new one coming soon</p>
+        ) : (
+          <p className="beer-item-sub">
+            {beer.style} {beer.abv}
+          </p>
+        )}
       </div>
       <div className="beer-item-price">
-        <p dangerouslySetInnerHTML={{ __html: beer.price.replace(/ \/ /g, '<br/>') }} />
-        {isNew && <span className="new-tag">NEW</span>}
+        {!isEmpty && <p dangerouslySetInnerHTML={{ __html: beer.price.replace(/ \/ /g, '<br/>') }} />}
+        {isNew && !isEmpty && <span className="new-tag">NEW</span>}
       </div>
     </div>
   )
@@ -112,8 +117,8 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
     return <div className="loading-screen">Loading...</div>;
   }
 
-  const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore && b.status !== 'keg_empty').sort((a, b) => a.tapNumber - b.tapNumber) : [];
-  const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore && b.status !== 'keg_empty').sort((a, b) => a.tapNumber - b.tapNumber) : [];
+  const coreBeers = Array.isArray(beers) ? beers.filter(b => b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
+  const rotatingBeers = Array.isArray(beers) ? beers.filter(b => !b.isCore).sort((a, b) => a.tapNumber - b.tapNumber) : [];
 
   let leftColumnBeers, rightColumnBeers;
   let leftColumnTitle, rightColumnTitle;
