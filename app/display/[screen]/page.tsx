@@ -148,18 +148,8 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
   const getRotatingIndex = (beer: Beer, index: number, isRightColumn: boolean) => {
     if (beer.isCore) return undefined; // Core beers have no numbers
     
-    if (isDisplay1) {
-      // Display 1: rotating beers are numbered 1, 2, 3, 4...
-      return index + 1;
-    } else {
-      // Display 2: rotating beers continue from 6 onwards
-      // First 5 rotating beers are on Display 1 (1-5), so Display 2 starts from 6
-      let baseIndex = 5; // Start from 6 (5 + 1)
-      if (isRightColumn) {
-        baseIndex += leftColumnBeers.length; // Add left column count for right column
-      }
-      return baseIndex + index + 1;
-    }
+    // Use the actual tapNumber from the database instead of array index
+    return beer.tapNumber;
   };
   
   return (
