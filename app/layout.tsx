@@ -18,7 +18,7 @@ export default function RootLayout({
   // Add Silk browser zoom adjustment
   React.useEffect(() => {
     if (typeof window !== 'undefined' && navigator.userAgent.includes('Silk')) {
-      document.body.style.zoom = '0.6';
+      (document.body.style as any).zoom = '0.6';
     }
   }, []);
   return (
