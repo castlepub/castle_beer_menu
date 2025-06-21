@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,14 +14,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Add Silk browser zoom adjustment
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && navigator.userAgent.includes('Silk')) {
-      (document.body.style as any).zoom = '0.6';
-    }
-  }, []);
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (navigator.userAgent.includes('Silk')) {
+                document.body.style.zoom = '0.6';
+              }
+            `,
+          }}
+        />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   )
