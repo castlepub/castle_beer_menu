@@ -230,4 +230,13 @@ body {
 
 .display-2-large .beer-item-sub {
   font-size: 1.875rem; /* 30px */
+}
+
+@media (min-width: 1920px) {
+  html {
+    font-size: 12px;
+  }
+  body {
+    zoom: 0.6;
+  }
 } 
