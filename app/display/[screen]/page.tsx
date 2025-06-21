@@ -146,9 +146,9 @@ export default function DisplayPage({ params }: { params: { screen: string } }) 
 
   // Calculate rotating beer index for proper numbering
   const getRotatingIndex = (beer: Beer, index: number, isRightColumn: boolean) => {
-    if (beer.isCore) return undefined; // Core beers have no numbers
+    if (beer.isCore) return undefined; // Core beers have no numbers (A, B, C, D, E, F)
     
-    // Use the actual tapNumber from the database instead of array index
+    // For rotating beers, use the actual tapNumber from the database
     return beer.tapNumber;
   };
   
