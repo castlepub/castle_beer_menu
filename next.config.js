@@ -9,6 +9,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.untappd.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   
