@@ -279,14 +279,13 @@ body {
   }
   
   .beer-item {
-    grid-template-columns: 48px 1fr auto;
+    grid-template-columns: 1fr auto;
     gap: 0.75rem;
     padding-bottom: 0.5rem;
   }
   
   .beer-item-logo {
-    width: 48px;
-    height: 48px;
+    display: none;
   }
   
   .beer-item-header {
