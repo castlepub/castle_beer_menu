@@ -17,21 +17,6 @@ const nextConfig = {
       },
     ],
   },
-  
-  // Allow embedding in iframes for Wix integration
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self' *.wix.com *.wixsite.com;",
-          },
-        ],
-      },
-    ]
-  },
 }
 
 module.exports = nextConfig 
