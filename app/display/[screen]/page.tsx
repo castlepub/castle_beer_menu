@@ -53,9 +53,16 @@ const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number 
         {isEmpty ? (
           <p className="beer-item-sub font-semibold">keg is empty new one coming soon</p>
         ) : (
-          <p className="beer-item-sub">
-            {beer.style} {beer.abv}
-          </p>
+          <>
+            <p className="beer-item-sub">
+              {beer.style} {beer.abv}
+            </p>
+            {beer.location && (
+              <p className="beer-item-location">
+                {beer.location}
+              </p>
+            )}
+          </>
         )}
       </div>
       <div className="beer-item-price">

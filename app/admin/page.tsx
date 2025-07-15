@@ -21,6 +21,7 @@ interface Beer {
   logo?: string
   status: string
   tags?: string
+  location?: string
   startDate: string
   endDate?: string
   isCore: boolean
@@ -52,6 +53,7 @@ export default function AdminPage() {
     logo: '',
     status: 'on_tap',
     tags: '',
+    location: '',
     isCore: false
   })
   const [isEditing, setIsEditing] = useState(false)
@@ -153,6 +155,7 @@ export default function AdminPage() {
           logo: '',
           status: 'on_tap',
           tags: '',
+          location: '',
           isCore: false
         })
         setIsEditing(false)
@@ -180,6 +183,7 @@ export default function AdminPage() {
       logo: beer.logo || '',
       status: beer.status,
       tags: beer.tags ? JSON.parse(beer.tags).join(', ') : '',
+      location: beer.location || '',
       isCore: beer.isCore
     })
     setIsEditing(true)
@@ -508,7 +512,7 @@ export default function AdminPage() {
                     id="style"
                     value={beerForm.style}
                     onChange={(e) => setBeerForm({ ...beerForm, style: e.target.value })}
-                    required
+                    placeholder="e.g., IPA, Stout, Lager"
                   />
                 </div>
                 <div className="space-y-2">
@@ -521,6 +525,16 @@ export default function AdminPage() {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={beerForm.location}
+                  onChange={(e) => setBeerForm({ ...beerForm, location: e.target.value })}
+                  placeholder="e.g., 🇩🇪 Berlin, DE"
+                />
               </div>
 
               <div className="space-y-2">
@@ -578,16 +592,17 @@ export default function AdminPage() {
                 </p>
               </div>
 
-              <div className="flex gap-2">
-                <Button type="submit">
+              <div className="flex justify-end space-x-4 mt-4">
+                <Button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors"
+                >
                   {isEditing ? 'Update Beer' : 'Add Beer'}
                 </Button>
                 {isEditing && (
                   <Button
                     type="button"
-                    variant="outline"
                     onClick={() => {
-                      setIsEditing(false)
                       setBeerForm({
                         id: '',
                         tapNumber: '',
@@ -600,9 +615,12 @@ export default function AdminPage() {
                         logo: '',
                         status: 'on_tap',
                         tags: '',
+                        location: '',
                         isCore: false
                       })
+                      setIsEditing(false)
                     }}
+                    className="bg-gray-500 hover:bg-gray-600 text-white"
                   >
                     Cancel
                   </Button>
