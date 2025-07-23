@@ -508,10 +508,10 @@ export default function AdminPage() {
                     onChange={(e) => setBeerForm({ ...beerForm, nameFontSize: e.target.value })}
                     className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <option value="0.75rem">Small</option>
-                    <option value="1rem">Medium (Default)</option>
-                    <option value="1.25rem">Large</option>
-                    <option value="1.5rem">Extra Large</option>
+                    <option value="1.4vw">Small (1.4vw)</option>
+                    <option value="1.6vw">Medium (1.6vw)</option>
+                    <option value="1.8vw">Large (1.8vw)</option>
+                    <option value="2vw">Extra Large (2vw, TV Default)</option>
                   </select>
                 </div>
               </div>
@@ -531,10 +531,10 @@ export default function AdminPage() {
                     onChange={(e) => setBeerForm({ ...beerForm, breweryFontSize: e.target.value })}
                     className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <option value="0.75rem">Small</option>
-                    <option value="1rem">Medium (Default)</option>
-                    <option value="1.25rem">Large</option>
-                    <option value="1.5rem">Extra Large</option>
+                    <option value="1.4vw">Small (1.4vw)</option>
+                    <option value="1.6vw">Medium (1.6vw)</option>
+                    <option value="1.8vw">Large (1.8vw)</option>
+                    <option value="2vw">Extra Large (2vw, TV Default)</option>
                   </select>
                 </div>
               </div>
