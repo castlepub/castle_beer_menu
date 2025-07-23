@@ -55,9 +55,19 @@ const getTagInfo = (tag: string) => {
   }
 };
 
+const isLargeScreen = typeof window !== 'undefined' && window.innerWidth >= 1200;
+
 const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number }) => {
   const tags = beer.tags ? JSON.parse(beer.tags) : [];
   const isEmpty = beer.status === 'keg_empty';
+
+  // Determine font size for name and brewery
+  const nameFontSize = beer.nameFontSize
+    ? beer.nameFontSize
+    : (typeof window !== 'undefined' && window.innerWidth >= 1200 ? '1.4rem' : undefined);
+  const breweryFontSize = beer.breweryFontSize
+    ? beer.breweryFontSize
+    : (typeof window !== 'undefined' && window.innerWidth >= 1200 ? '1.4rem' : undefined);
 
   return (
     <div className={`beer-item ${isEmpty ? 'keg-empty' : ''}`}>
@@ -66,12 +76,12 @@ const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number 
       </div>
       <div className="beer-item-info">
         <p className={`beer-item-header ${isEmpty ? 'line-through' : ''}`}>
-          <strong style={{ fontSize: beer.nameFontSize || '1rem' }}>
+          <strong style={nameFontSize ? { fontSize: nameFontSize } : {}}>
             {!beer.isCore && rotatingIndex !== undefined && `${rotatingIndex}. `}
             {beer.name.toUpperCase()}
           </strong>
           {' - '}
-          <span style={{ fontSize: beer.breweryFontSize || '1rem' }}>
+          <span style={breweryFontSize ? { fontSize: breweryFontSize } : {}}>
             {beer.brewery.toUpperCase()}
           </span>
         </p>
