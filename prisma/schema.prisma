@@ -16,7 +16,9 @@ model Beer {
   tapNumber     Int      @unique @map("tap_number")
   displayNumber Int?     @map("display_number") // For manual display ordering of rotating beers
   name          String
+  nameFontSize  String?  @default("1rem") @map("name_font_size")
   brewery       String
+  breweryFontSize String? @default("1rem") @map("brewery_font_size")
   abv           String
   style         String
   price         String

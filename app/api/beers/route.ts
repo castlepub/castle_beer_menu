@@ -16,14 +16,16 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { tapNumber, displayNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
+    const { tapNumber, displayNumber, name, nameFontSize, brewery, breweryFontSize, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.create({
       data: {
         tapNumber: parseInt(tapNumber),
         displayNumber: displayNumber ? parseInt(displayNumber) : null,
         name,
+        nameFontSize: nameFontSize || '1rem',
         brewery,
+        breweryFontSize: breweryFontSize || '1rem',
         abv,
         style,
         price,
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, tapNumber, displayNumber, name, brewery, abv, style, price, logo, status, tags, location, isCore } = body
+    const { id, tapNumber, displayNumber, name, nameFontSize, brewery, breweryFontSize, abv, style, price, logo, status, tags, location, isCore } = body
 
     const beer = await prisma.beer.update({
       where: { id: parseInt(id) },
@@ -53,7 +55,9 @@ export async function PUT(request: NextRequest) {
         tapNumber: parseInt(tapNumber),
         displayNumber: displayNumber ? parseInt(displayNumber) : null,
         name,
+        nameFontSize: nameFontSize || '1rem',
         brewery,
+        breweryFontSize: breweryFontSize || '1rem',
         abv,
         style,
         price,

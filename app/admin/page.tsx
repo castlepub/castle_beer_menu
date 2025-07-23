@@ -25,6 +25,8 @@ interface Beer {
   startDate: string
   endDate?: string
   isCore: boolean
+  nameFontSize?: string
+  breweryFontSize?: string
 }
 
 interface RotatingMessage {
@@ -46,7 +48,9 @@ export default function AdminPage() {
     tapNumber: '',
     displayNumber: '',
     name: '',
+    nameFontSize: '1rem',
     brewery: '',
+    breweryFontSize: '1rem',
     abv: '',
     style: '',
     price: '',
@@ -148,7 +152,9 @@ export default function AdminPage() {
           tapNumber: '',
           displayNumber: '',
           name: '',
+          nameFontSize: '1rem',
           brewery: '',
+          breweryFontSize: '1rem',
           abv: '',
           style: '',
           price: '',
@@ -176,7 +182,9 @@ export default function AdminPage() {
       tapNumber: beer.tapNumber.toString(),
       displayNumber: beer.displayNumber?.toString() || '',
       name: beer.name,
+      nameFontSize: beer.nameFontSize || '1rem',
       brewery: beer.brewery,
+      breweryFontSize: beer.breweryFontSize || '1rem',
       abv: beer.abv,
       style: beer.style,
       price: beer.price,
@@ -487,22 +495,48 @@ export default function AdminPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="name">Beer Name</Label>
-                <Input
-                  id="name"
-                  value={beerForm.name}
-                  onChange={(e) => setBeerForm({ ...beerForm, name: e.target.value })}
-                  required
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    id="name"
+                    value={beerForm.name}
+                    onChange={(e) => setBeerForm({ ...beerForm, name: e.target.value })}
+                    required
+                  />
+                  <select
+                    id="nameFontSize"
+                    value={beerForm.nameFontSize}
+                    onChange={(e) => setBeerForm({ ...beerForm, nameFontSize: e.target.value })}
+                    className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="0.75rem">Small</option>
+                    <option value="1rem">Medium (Default)</option>
+                    <option value="1.25rem">Large</option>
+                    <option value="1.5rem">Extra Large</option>
+                  </select>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="brewery">Brewery</Label>
-                <Input
-                  id="brewery"
-                  value={beerForm.brewery}
-                  onChange={(e) => setBeerForm({ ...beerForm, brewery: e.target.value })}
-                  required
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    id="brewery"
+                    value={beerForm.brewery}
+                    onChange={(e) => setBeerForm({ ...beerForm, brewery: e.target.value })}
+                    required
+                  />
+                  <select
+                    id="breweryFontSize"
+                    value={beerForm.breweryFontSize}
+                    onChange={(e) => setBeerForm({ ...beerForm, breweryFontSize: e.target.value })}
+                    className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="0.75rem">Small</option>
+                    <option value="1rem">Medium (Default)</option>
+                    <option value="1.25rem">Large</option>
+                    <option value="1.5rem">Extra Large</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -608,7 +642,9 @@ export default function AdminPage() {
                         tapNumber: '',
                         displayNumber: '',
                         name: '',
+                        nameFontSize: '1rem',
                         brewery: '',
+                        breweryFontSize: '1rem',
                         abv: '',
                         style: '',
                         price: '',

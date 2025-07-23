@@ -11,7 +11,9 @@ interface Beer {
   tapNumber: number;
   displayNumber?: number;
   name: string;
+  nameFontSize?: string;
   brewery: string;
+  breweryFontSize?: string;
   style: string;
   abv: string;
   price: string;
@@ -32,8 +34,29 @@ interface RotatingMessage {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
+const getTagInfo = (tag: string) => {
+  switch (tag.toUpperCase()) {
+    case 'NEW':
+      return { color: '#ffc107', textColor: '#000000' };
+    case 'LIMITED':
+      return { color: '#ff6b6b', textColor: '#ffffff' };
+    case 'STRONG':
+      return { color: '#845ef7', textColor: '#ffffff' };
+    case 'SEASONAL':
+      return { color: '#ff922b', textColor: '#000000' };
+    case 'HOUSE':
+      return { color: '#20c997', textColor: '#000000' };
+    case 'POPULAR':
+      return { color: '#ffd43b', textColor: '#000000' };
+    case 'AWARD':
+      return { color: '#fab005', textColor: '#000000' };
+    default:
+      return { color: '#868e96', textColor: '#ffffff' };
+  }
+};
+
 const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number }) => {
-  const isNew = beer.tags && JSON.parse(beer.tags).includes('new');
+  const tags = beer.tags ? JSON.parse(beer.tags) : [];
   const isEmpty = beer.status === 'keg_empty';
 
   return (
@@ -43,12 +66,14 @@ const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number 
       </div>
       <div className="beer-item-info">
         <p className={`beer-item-header ${isEmpty ? 'line-through' : ''}`}>
-          <strong>
+          <strong style={{ fontSize: beer.nameFontSize || '1rem' }}>
             {!beer.isCore && rotatingIndex !== undefined && `${rotatingIndex}. `}
             {beer.name.toUpperCase()}
           </strong>
           {' - '}
-          {beer.brewery.toUpperCase()}
+          <span style={{ fontSize: beer.breweryFontSize || '1rem' }}>
+            {beer.brewery.toUpperCase()}
+          </span>
         </p>
         {isEmpty ? (
           <p className="beer-item-sub font-semibold">keg is empty new one coming soon</p>
@@ -57,17 +82,33 @@ const BeerItem = ({ beer, rotatingIndex }: { beer: Beer; rotatingIndex?: number 
             <p className="beer-item-sub">
               {beer.style} {beer.abv}
             </p>
-            {beer.location && (
-              <p className="beer-item-location">
-                {beer.location}
-              </p>
-            )}
+            <p className="beer-item-location">
+              {beer.location}
+              {tags.length > 0 && (
+                <span className="beer-item-tags">
+                  {tags.map((tag: string) => {
+                    const tagInfo = getTagInfo(tag);
+                    return (
+                      <span 
+                        key={tag} 
+                        className="beer-tag"
+                        style={{ 
+                          backgroundColor: tagInfo.color,
+                          color: tagInfo.textColor
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    );
+                  })}
+                </span>
+              )}
+            </p>
           </>
         )}
       </div>
       <div className="beer-item-price">
         {!isEmpty && <p dangerouslySetInnerHTML={{ __html: beer.price.replace(/ \/ /g, '<br/>') }} />}
-        {isNew && !isEmpty && <span className="new-tag">NEW</span>}
       </div>
     </div>
   )
